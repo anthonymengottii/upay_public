@@ -49,7 +49,7 @@ Criado com foco em **segurança, escalabilidade e automação**, o sistema foi p
 ### 🧭 Architecture Snapshot | Arquitetura
 
 <p align="center">
-  <img src="https://github.com/anthonymengottii/upay-public/docs/architecture.png" width="80%" alt="Upay Architecture Overview"/>
+  <img src="https://github.com/anthonymengottii/upay-public/docs/system-flow.png" width="80%" alt="Upay Architecture Overview"/>
 </p>
 
 > Estrutura baseada em microsserviços com comunicação assíncrona e pipelines de processamento de pagamentos em tempo real.
