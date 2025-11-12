@@ -52,7 +52,8 @@ Criado com foco em **segurança, escalabilidade e automação**, o sistema foi p
   <img src="./docs/system-flow.png" width="85%" alt="Upay System Flow Diagram" />
 </p>
 
-> Estrutura baseada em microsserviços com comunicação assíncrona e pipelines de processamento de pagamentos em tempo real.
+> **🇺🇸 EN:** Microservice-based architecture with asynchronous communication and real-time payment processing pipelines.  
+> **🇧🇷 PT:** Estrutura baseada em microsserviços com comunicação assíncrona e pipelines de processamento de pagamentos em tempo real.
 
 ---
 
