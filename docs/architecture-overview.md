@@ -49,7 +49,7 @@ The system follows a **Service-Oriented Architecture (SOA)** model, where each m
 ---
 
 ## 🧠 Architecture Diagram
-![Upay Architecture](./system-flow.png)
+![Upay Architecture](./architecture.png)
 
 ---
 
