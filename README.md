@@ -113,10 +113,6 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 
 ## Arquitetura do Sistema
 
-<p align="center">
-  <img src="./docs/system-flow.png" width="85%" alt="Diagrama de Fluxo do Sistema Upay" />
-</p>
-
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                       Frontend React                            │
