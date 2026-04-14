@@ -2,14 +2,14 @@
 
 ## Overview
 
-The **Upay** platform is built as a **production-grade, layered service architecture** that separates concerns cleanly between transport (controllers/routes), business logic (services), and data access (Prisma ORM). Every domain has its own service module, ensuring the codebase remains maintainable at scale.
+The **Upay** platform follows a **layered service architecture** that separates concerns between transport (controllers/routes), business logic (services), and data access (Prisma ORM). Every domain has its own service module, ensuring the codebase remains maintainable at scale.
 
 ---
 
 ## Core Components
 
 ### 1. Frontend (React 18 + Vite)
-- Built with **React 18 + Vite** and **TypeScript** with strict mode — zero `any` warnings across the entire codebase
+- Built with **React 18 + Vite** and **TypeScript** strict mode
 - State management via **Zustand** (global auth/user state) and **React Query** (server state, caching, invalidation)
 - UI layer: **Tailwind CSS** + **shadcn/ui** components with full dark mode support
 - Multi-page routing: dashboard, admin panel, product catalog, affiliate marketplace, checkout
@@ -19,10 +19,10 @@ The **Upay** platform is built as a **production-grade, layered service architec
 ### 2. Backend (Node.js 20 + Express)
 - **Express.js** with **TypeScript** — all routes, middleware and controllers fully typed
 - **Zod** for runtime request validation (body, params, query) at controller entry points
-- **Prisma ORM** with **PostgreSQL** in production — versioned migrations, no raw SQL for schema changes
-- **Redis** for rate-limit counters and caching layers
+- **Prisma ORM** with **PostgreSQL** — versioned migrations
+- **Redis** for rate-limit counters and caching
 - **JWT** for user authentication + **API Keys** for external integrations
-- **Idempotency keys** on `POST /transactions` — prevents duplicate charges on client retries
+- **Idempotency keys** on `POST /transactions`
 
 ### 3. Service Layer
 Each domain has an isolated service module:
@@ -40,34 +40,31 @@ Each domain has an isolated service module:
 ### 4. Affiliate Marketing System (v2.22.0)
 - Merchants create **AffiliateProgram** records linked 1:1 to a product
 - Affiliates join programs and receive a unique **AffiliateLink** with a human-readable code (`NAME-XXXXXX`)
-- Each purchase via `?aff=CODE` links the transaction to the affiliate link
-- On payment confirmation, `affiliateService.processAffiliateCommission()` runs inside a `prisma.$transaction` block:
-  1. Reads the link + program
-  2. Calculates commission (PERCENTAGE or FIXED)
-  3. Creates `AffiliateCommission` record (PENDING)
-  4. Creates `BalanceEntry` credit for the affiliate wallet
-  5. Marks commission as PAID, increments conversion counters
-- Designed to be idempotent — commission is tied to `transactionId` with a unique constraint
+- Purchases via `?aff=CODE` are linked to the affiliate at checkout
+- `affiliateService.processAffiliateCommission()` runs inside a `prisma.$transaction` block:
+  1. Calculates commission (PERCENTAGE or FIXED)
+  2. Creates `AffiliateCommission` record
+  3. Creates `BalanceEntry` credit for the affiliate wallet
+  4. Increments conversion counters atomically
 
 ### 5. Admin Infrastructure
 - **Role-Based Access Control (RBAC)**: `AdminRole` model with 18 granular boolean permission flags
-- Super admins (`adminRoleId = null`) bypass all permission checks
 - `requirePermission(flag)` middleware injected per route
 - **Kanban board**: `KanbanTask` model with priority enum, assignees and column-based status
-- **Email template management**: admin-editable Handlebars templates, PDF comprovantes auto-attached
+- **Email template management**: admin-editable Handlebars templates with PDF receipts
 
-### 6. Security Architecture
-- Passwords hashed with **bcrypt** (12 rounds)
-- Webhook signatures: **HMAC-SHA256** with timing-safe comparison and ±60s clock skew tolerance
-- Rate limiting: per `userId` on authenticated routes (not per IP — avoids penalizing users behind NAT)
-- **Circuit breaker** on PSP calls — fast-fail after consecutive errors without blocking thread pool
-- XSS sanitization on `metadata` field in transaction payloads
+### 6. Security
+- Passwords hashed with **bcrypt**
+- Webhook signatures: **HMAC-SHA256** with timing-safe comparison
+- Rate limiting per `userId` on authenticated routes
+- **Circuit breaker** on PSP calls
+- XSS sanitization on transaction metadata
 - CPF/CNPJ validated with **mod-11 check digit** algorithm
-- CORS with explicit origin allowlist (no wildcard subdomain derivation)
+- CORS with explicit origin allowlist
 
 ---
 
-## Data Model Highlights
+## Data Model
 
 ```
 User ──────────────── Transaction
@@ -82,34 +79,23 @@ User ──────────────── Transaction
   └── KYC
 ```
 
-Key design decisions:
-- `AffiliateProgram` has a unique constraint on `productId` (one program per product)
-- `AffiliateLink` has a unique constraint on `(programId, affiliateId)` (one link per affiliate per program)
-- `AffiliateCommission.transactionId` is unique (one commission per transaction, no double-paying)
-- `Transaction.affiliateLinkId` is nullable (most transactions are not affiliate-referred)
+- `AffiliateProgram` → unique per `productId`
+- `AffiliateLink` → unique per `(programId, affiliateId)`
+- `AffiliateCommission` → unique per `transactionId`
+- `Transaction.affiliateLinkId` → nullable FK
 
 ---
 
 ## Deployment
 
-| Layer | Platform | Notes |
-|-------|----------|-------|
-| Frontend | Vercel | Vite build, automatic preview deployments |
-| Backend API | Render | Node.js 20, environment secrets, auto-deploy on push |
-| Database | PostgreSQL (managed) | Prisma migrations on deploy |
-| Cache | Redis (managed) | Rate limiting and session data |
-| Images | Cloudinary | Auto WebP conversion, CDN delivery |
-| CI/CD | GitHub Actions | `unit.yml` (Vitest) + `e2e.yml` (real PostgreSQL) |
-
----
-
-## Engineering Standards
-
-- **TypeScript strict mode** — zero `any` across frontend and backend (1,289 warnings eliminated)
-- **No mock databases in E2E tests** — real PostgreSQL after a production incident where mock divergence masked a broken migration
-- **Prisma migrations only** — no ad-hoc SQL for schema changes (drift corrected and locked)
-- **Service isolation** — controllers never access Prisma directly; all DB calls go through service layer
-- **Atomic operations** — financial state changes use `prisma.$transaction` for consistency
+| Layer | Platform |
+|-------|----------|
+| Frontend | Vercel (Vite build, preview deployments) |
+| Backend API | Render (Node.js 20, auto-deploy on push) |
+| Database | PostgreSQL managed (Prisma migrations) |
+| Cache | Redis managed |
+| Images | Cloudinary (WebP, CDN) |
+| CI/CD | GitHub Actions (`unit.yml` + `e2e.yml`) |
 
 ---
 

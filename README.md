@@ -1,9 +1,9 @@
-<!-- 🏦 Upay | Payment Gateway & Digital Banking Infrastructure -->
+<!-- 🏦 Upay | Payment Gateway -->
 
 <div align="center">
 
 <h1>🏦 Upay</h1>
-<h3>Full-Stack Payment Gateway Infrastructure</h3>
+<h3>Full-Stack Payment Gateway</h3>
 <p><em>Gateway de pagamentos completo com marketplace de afiliados, gestão financeira e painel administrativo avançado.</em></p>
 
 <p>
@@ -33,63 +33,62 @@
 
 ## Overview
 
-**Upay** is a production-grade, full-stack payment gateway built from the ground up. It handles the complete payment lifecycle — from PIX and card processing to affiliate commissions, balance management, and regulatory compliance — with a security-first, type-safe architecture.
+**Upay** is a production-grade, full-stack payment gateway built from the ground up. It handles the complete payment lifecycle — from PIX and card processing to affiliate commissions and balance management — with a security-first, type-safe architecture.
 
-The system was designed to rival established Brazilian payment platforms (Iugu, Pagar.me, Hotmart) in depth and reliability, while remaining fully customizable as a white-label offering.
+Designed to rival established Brazilian payment platforms (Iugu, Pagar.me, Hotmart) in depth and reliability, while remaining fully customizable as a white-label offering.
 
 ---
 
 ## Core Technical Highlights
 
 ### 🔐 Security & Compliance
-- **Zero `any` TypeScript policy** — 1,289 warnings eliminated; entire codebase runs with strict types
+- **TypeScript strict mode** across the entire frontend and backend codebase
 - **KYC flow** with document upload, admin review and automated status webhooks
-- **JWT authentication** with bcrypt, API Key support for external integrations
-- **Role-based access control (RBAC)** with granular admin permissions (18 distinct permission flags)
-- **Rate limiting** per `userId` on authenticated routes (prevents NAT/proxy penalization)
-- **Idempotency keys** on transaction creation (prevents duplicate charges on retry)
-- **HMAC-SHA256 webhook signatures** with timing-safe comparison and 60s skew tolerance
-- **Input sanitization** against XSS in transaction metadata
+- **JWT authentication** with bcrypt, plus API Key support for external integrations
+- **Role-based access control (RBAC)** with 18 granular admin permission flags
+- **Rate limiting** per `userId` on authenticated routes
+- **Idempotency keys** on transaction creation
+- **HMAC-SHA256 webhook signatures** with timing-safe comparison
 - **CPF/CNPJ validation** with mod-11 check digit verification
-- **Privilege escalation fix** on admin financial routes (verified at route layer)
+- **XSS sanitization** on transaction metadata
 
 ### 💳 Payment Processing
 - **Multi-method**: PIX (instant), credit/debit card (up to 12x installments), boleto
-- **PSP integration**: Ameii gateway with async PIX processing, external ID tracking and status sync
-- **Circuit breaker** for PSP failures — fast-fail without blocking request threads
-- **Webhook delivery system** with automatic retry on failure
-- **Automatic card release** — settled after 30 days (lump-sum) or per installment (split)
-- **Split payments** — automatic division between gateway and merchant via Pagar.me
-- **Advanced sales tracking** — native UTM capture (`utm_source`, `utm_medium`, `utm_campaign`) and click IDs (`fbclid`, `gclid`) via Utmify integration
+- **PSP integration**: Ameii gateway with async PIX processing and status sync
+- **Circuit breaker** on PSP calls for fast failure isolation
+- **Webhook delivery** with automatic retry
+- **Automatic card release** — 30 days lump-sum or per installment
+- **Split payments** via Pagar.me
+- **Advanced sales tracking** — UTM capture (`utm_source`, `utm_medium`, `utm_campaign`) and click IDs (`fbclid`, `gclid`) via Utmify
 
 ### 🤝 Affiliate Marketing System (v2.22.0)
 - **Marketplace**: merchants create affiliate programs per product; affiliates browse and request to join
-- **Unique trackable links** in format `/pay/{slug}?aff={CODE}` with configurable cookie window (default 30 days)
+- **Unique trackable links** — `/pay/{slug}?aff={CODE}` with configurable cookie window
 - **Automatic commissions**: credited to affiliate wallet on payment confirmation — `PERCENTAGE` or `FIXED` types
-- **Full audit trail**: per-link click and conversion counters, commission status (`PENDING → PAID → CANCELLED`)
-- **Program rules engine**: description, rules, affiliate page and sales page fields per program
-- Architecture mirrors Hotmart/Kirvano; commission processing uses atomic `prisma.$transaction` for consistency
+- **Per-link metrics**: click counters, conversion counters, commission status tracking
+- **Program configuration**: description, rules, affiliate page and sales page per program
+- Commission processing via atomic `prisma.$transaction`
 
 ### 🏗️ Architecture & Engineering
 - **Monorepo** with independent `api/` (Node.js) and `src/` (React) modules
-- **Service layer pattern**: domain services (`transactionService`, `affiliateService`, `referralService`) isolated from controllers
-- **Prisma ORM** with PostgreSQL — all schema changes via versioned migrations
+- **Service layer**: domain services (`transactionService`, `affiliateService`, `referralService`, `webhookService`) isolated from controllers
+- **Prisma ORM** with versioned PostgreSQL migrations
 - **Redis** for caching and rate-limit counters
-- **Cloudinary** for image storage (products, KYC documents, reward tiers) with automatic WebP optimization
+- **Cloudinary** for image storage with automatic WebP optimization
 - **gzip/brotli compression** on all responses
 - **Subdomain routing**: `app.[domain].com` (dashboard) vs `checkout.[domain].com` (public checkout)
-- **OpenAPI 3.0 spec** maintained in-code and published to public documentation (Mintlify)
+- **OpenAPI 3.0 spec** maintained in-code, published via Mintlify
 
 ### 🛠️ Admin Infrastructure
-- **Kanban task board** — full CRUD with priority levels, assignees and drag-and-drop columns (Idea → In Progress → Done)
-- **Granular RBAC** — custom admin roles with per-permission toggles (e.g., `approve_kyc`, `view_transactions`, `approve_withdrawals`)
-- **Email template management** — Handlebars templates with PDF receipt attachments, dark-mode prevention
-- **Audit dashboard** — transaction oversight, KYC queue, withdrawal approvals, advance requests
+- **Kanban task board** — full CRUD with priority levels, assignees and status columns
+- **Granular RBAC** — custom admin roles with per-permission toggles (`approve_kyc`, `view_transactions`, `approve_withdrawals`, and more)
+- **Email template management** — Handlebars templates with PDF receipt attachments
+- **Audit dashboard** — KYC queue, withdrawal approvals, advance requests, transaction oversight
 
-### 🧪 Test Coverage
-- **Unit test suites** (Vitest) for all major controllers: transactions, wallet, payment links, profile, advances, transfers, coupons
-- **E2E test pipeline** configured with real PostgreSQL (no mocks — after a production incident where mock/prod divergence masked a broken migration)
-- **CI/CD**: GitHub Actions with separate `unit.yml` and `e2e.yml` workflows
+### 🧪 Tests & CI/CD
+- **Unit test suites** (Vitest) covering transactions, wallet, payment links, profile, advances, transfers and coupons
+- **E2E test pipeline** with real PostgreSQL
+- **GitHub Actions** with separate `unit.yml` and `e2e.yml` workflows
 
 ---
 
@@ -102,10 +101,10 @@ The system was designed to rival established Brazilian payment platforms (Iugu, 
 | Layer | Technologies |
 |-------|-------------|
 | **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand, React Query |
-| **Backend** | Node.js 20, Express, TypeScript, Zod (validation) |
+| **Backend** | Node.js 20, Express, TypeScript, Zod |
 | **Database** | PostgreSQL 13+, Prisma ORM, Redis |
 | **Auth** | JWT, bcrypt, API Keys |
-| **Storage** | Cloudinary (images), local (documents) |
+| **Storage** | Cloudinary |
 | **Payments** | Ameii (PIX), Pagar.me (split), Utmify (tracking) |
 | **DevOps** | GitHub Actions, Render (API), Vercel (Frontend) |
 | **Docs** | Mintlify, OpenAPI 3.0 |
@@ -117,8 +116,6 @@ The system was designed to rival established Brazilian payment platforms (Iugu, 
 <p align="center">
   <img src="./docs/system-flow.png" width="85%" alt="Upay System Flow Diagram" />
 </p>
-
-The platform follows a **layered service architecture**:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -152,7 +149,7 @@ The platform follows a **layered service architecture**:
 | Webhook subscriptions | ✅ Production |
 | Coupon system (% / fixed) | ✅ Production |
 | Product catalog + stock | ✅ Production |
-| Referral program (Indique e Ganhe) | ✅ Production |
+| Referral program | ✅ Production |
 | **Affiliate marketplace** | ✅ **v2.22.0** |
 | Balance / withdrawals / advances | ✅ Production |
 | Admin RBAC (18 permissions) | ✅ Production |
@@ -161,7 +158,7 @@ The platform follows a **layered service architecture**:
 | Split payments | ✅ Production |
 | UTM / sales tracking | ✅ Production |
 | Shopify integration | ✅ Production |
-| Rate limiting (per userId) | ✅ Production |
+| Rate limiting | ✅ Production |
 | HMAC webhook signatures | ✅ Production |
 | Circuit breaker (PSP) | ✅ Production |
 | Unit + E2E test suites | ✅ Production |
