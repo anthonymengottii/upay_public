@@ -1,83 +1,79 @@
-# 🔗 Integrations Overview
+# 🔗 Integrações
 
-## Payment Processors
+## Processadores de Pagamento
 
-### Ameii (PIX Gateway)
-The primary PIX integration. Key design decisions made during implementation:
+### Ameii (Gateway PIX)
+Integração principal para pagamentos via PIX:
 
-- **Async processing**: PIX QR codes are generated asynchronously; the system polls or receives webhooks for confirmation
-- **Fault tolerance**: `processPixPaymentAsync` saves `externalId` and `ameiiTxId` even when the gateway returns an error — preventing lost transaction references
-- **Status sync**: `/sync-status` endpoint falls back to `paymentDetails.ameiiTxId` when `displayId` is null (handles edge cases in Ameii's response format)
-- **Graceful degradation**: returns `pix_copia_cola: null` instead of throwing when QR code is unavailable, allowing the UI to handle the partial state
+- **Processamento assíncrono**: QR codes PIX gerados de forma assíncrona; o sistema recebe confirmações via webhook
+- **Rastreamento de status**: endpoint `/sync-status` mantém o estado da transação sincronizado com o gateway
+- **Salvamento de referências externas**: `externalId` e `ameiiTxId` persistidos na transação para rastreabilidade completa
 
-### Pagar.me (Split Payments)
-Used for automatic revenue split between gateway and merchants:
+### Pagar.me (Split de Pagamentos)
+Utilizado para divisão automática de receita entre gateway e merchants:
 
-- Modular adapter pattern — Pagar.me runs under its own service module
-- Handles transaction orchestration independently from the core payment flow
-- Settlement data synced back to the Upay balance system
+- Padrão de adapter modular — Pagar.me opera em seu próprio módulo de serviço
+- Orquestração de transações independente do fluxo de pagamento principal
+- Dados de liquidação sincronizados de volta ao sistema de saldo do Upay
 
 ---
 
-## Cloud & Storage
+## Cloud e Armazenamento
 
 ### Cloudinary
-All user-generated images (product photos, KYC documents, reward tier images) are stored via Cloudinary:
+Todas as imagens geradas pelos usuários (fotos de produtos, documentos KYC, imagens de recompensas) são armazenadas via Cloudinary:
 
-- **Automatic optimization**: images converted to WebP with quality tuning on upload
-- **CDN delivery**: all image URLs served from Cloudinary's global CDN
-- **Migration scripts**: idempotent scripts to move existing local images to cloud storage
-- Upload handled server-side via Cloudinary SDK — client never receives direct upload credentials
+- **Otimização automática**: imagens convertidas para WebP no upload
+- **Entrega via CDN**: todas as URLs de imagem servidas pela CDN global do Cloudinary
+- **Upload server-side**: processado via SDK do Cloudinary no backend
 
 ---
 
-## Sales & Marketing
+## Vendas e Marketing
 
-### Utmify (Advanced Sales Tracking)
-Native integration for campaign attribution:
+### Utmify (Rastreamento Avançado de Vendas)
+Integração nativa para atribuição de campanhas:
 
-- Captures `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term` from checkout URLs
-- Supports ad click IDs: `fbclid` (Meta), `gclid` (Google)
-- Custom `src` parameter for direct attribution
-- IP address captured per transaction for geolocation reporting
-- Data forwarded to Utmify's API on payment confirmation
+- Captura `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term` nas URLs do checkout
+- Suporte a click IDs de anúncios: `fbclid` (Meta), `gclid` (Google)
+- Parâmetro `src` customizado para atribuição direta
+- Endereço IP capturado por transação
+- Dados encaminhados à API do Utmify na confirmação do pagamento
 
 ### Shopify
-Integration for merchants who sell via Shopify storefronts:
+Integração para merchants que vendem via lojas Shopify:
 
-- Configurable from the Partnerships page in the dashboard
-- Enables product sync and order reconciliation between Shopify and Upay
+- Configurável pela página de Parcerias no dashboard
+- Sincronização de produtos e reconciliação de pedidos entre Shopify e Upay
 
 ---
 
-## Communication
+## Comunicação
 
 ### Email (SMTP + Handlebars)
-- Transactional emails built with **Handlebars** templates
-- PDF payment receipts generated server-side and attached automatically
-- Templates are admin-editable from the dashboard (no redeploy required)
-- Dark mode prevention applied to all email HTML (consistent rendering across clients)
+- Emails transacionais construídos com templates **Handlebars**
+- Comprovantes de pagamento em PDF gerados no servidor e anexados automaticamente
+- Templates editáveis pelo admin direto no dashboard (sem necessidade de redeploy)
 
-### Webhooks (Outbound)
-Upay delivers real-time events to merchant endpoints:
+### Webhooks (Saída)
+O Upay entrega eventos em tempo real para os endpoints dos merchants:
 
-- Merchant subscribes to specific event types via `POST /api/v1/webhooks/subscriptions`
-- Events: `transaction.created`, `transaction.completed`, `transaction.failed`, `transaction.updated`, `payment_link.created`, `payment_link.updated`, `balance.updated`
-- **Signature**: each delivery includes `X-Webhook-Signature` (HMAC-SHA256 of payload + secret)
-- **Retry logic**: failed deliveries are retried with exponential backoff
-- **Clock skew tolerance**: ±60s between server and receiver clocks
+- Merchant assina tipos de eventos específicos via `POST /api/v1/webhooks/subscriptions`
+- Eventos: `transaction.created`, `transaction.completed`, `transaction.failed`, `transaction.updated`, `payment_link.created`, `payment_link.updated`, `balance.updated`
+- **Assinatura**: cada entrega inclui `X-Webhook-Signature` (HMAC-SHA256 do payload + secret)
+- **Retry automático**: entregas com falha são reprocessadas automaticamente
 
 ---
 
-## Developer SDKs
+## SDKs para Desenvolvedores
 
-Official SDKs available for all major backend languages:
+SDKs oficiais disponíveis para as principais linguagens backend:
 
-| SDK | Package | Language |
-|-----|---------|----------|
+| SDK | Pacote | Linguagem |
+|-----|--------|-----------|
 | Node.js / TypeScript | `@upay/upay-js` | JavaScript / TypeScript |
 | Python | `upay-python` | Python 3.8+ |
 | PHP | `upay/upay-php` | PHP 7.4+ |
 | Java | `com.upay:upay-java` | Java 11+ |
 
-All SDKs include HMAC webhook signature validation utilities and typed error handling.
+Todos os SDKs incluem utilitários de validação de assinatura HMAC para webhooks e tratamento de erros tipado.
