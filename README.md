@@ -3,8 +3,8 @@
 <div align="center">
 
 <h1>🏦 Upay</h1>
-<h3>Payment Gateway & Digital Banking Infrastructure</h3>
-<p><em>Gateway de pagamentos completo com banco digital, marketplace de afiliados e painel administrativo avançado.</em></p>
+<h3>Full-Stack Payment Gateway Infrastructure</h3>
+<p><em>Gateway de pagamentos completo com marketplace de afiliados, gestão financeira e painel administrativo avançado.</em></p>
 
 <p>
   <img src="https://img.shields.io/badge/Version-2.22.0-6D28D9?style=for-the-badge" />
@@ -33,9 +33,9 @@
 
 ## Overview
 
-**Upay** is a production-grade, full-stack payment infrastructure platform built from the ground up. It handles the complete financial lifecycle — from PIX and card processing to affiliate commissions, balance management, and regulatory compliance — with a security-first, type-safe architecture.
+**Upay** is a production-grade, full-stack payment gateway built from the ground up. It handles the complete payment lifecycle — from PIX and card processing to affiliate commissions, balance management, and regulatory compliance — with a security-first, type-safe architecture.
 
-The system was designed to rival established Brazilian fintech products (Hotmart, Iugu, Pagar.me) in depth and reliability, while remaining fully customizable as a white-label offering.
+The system was designed to rival established Brazilian payment platforms (Iugu, Pagar.me, Hotmart) in depth and reliability, while remaining fully customizable as a white-label offering.
 
 ---
 
