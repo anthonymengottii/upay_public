@@ -1,20 +1,62 @@
 # 🔗 Integrações
 
-## Processadores de Pagamento
+## Processadores de Pagamento (7 PSPs)
 
-### Ameii (Gateway PIX)
-Integração principal para pagamentos via PIX:
+O Upay opera com **7 adquirentes** via sistema de roteamento com prioridade configurável. Se o PSP de maior prioridade falhar (circuit breaker aberto), o sistema faz failover automático para o próximo ativo. Cada PSP possui seu próprio adaptador com circuit breaker independente.
 
-- **Processamento assíncrono**: QR codes PIX gerados de forma assíncrona; o sistema recebe confirmações via webhook
-- **Rastreamento de status**: endpoint `/sync-status` mantém o estado da transação sincronizado com o gateway
-- **Salvamento de referências externas**: `externalId` e `ameiiTxId` persistidos na transação para rastreabilidade completa
+### Fyntra (PIX)
+- PIX instantâneo com geração de QR code
+- `FYNTRA_ACTIVE` + prioridade configurável pelo painel admin
 
-### Pagar.me (Split de Pagamentos)
-Utilizado para divisão automática de receita entre gateway e merchants:
+### Pagar.me (PIX, Cartão, Boleto, Split)
+- PIX instantâneo, cartão de crédito/débito (parcelamento até 12x), boleto bancário
+- **Split de pagamentos**: divisão automática entre gateway e merchant usando recipients — cálculo baseado nas taxas cadastradas na plataforma
+- Captura manual, cancelamento e estorno de transações
+- Sistema de recebedores (recipients) para cada merchant
 
-- Padrão de adapter modular — Pagar.me opera em seu próprio módulo de serviço
-- Orquestração de transações independente do fluxo de pagamento principal
-- Dados de liquidação sincronizados de volta ao sistema de saldo do Upay
+### Citrex (PIX)
+- PIX com certificado público para validação de webhooks (TLS mútuo)
+
+### Ameii (PIX)
+- **Processamento assíncrono**: QR codes gerados de forma assíncrona; confirmações via webhook
+- **Rastreamento de status**: endpoint `/sync-status` mantém o estado sincronizado
+- `externalId` e `ameiiTxId` persistidos mesmo quando o PSP retorna erro — sem perda de rastreabilidade
+
+### Ezzy Banking (PIX)
+- PIX com webhook de confirmação; `EZZY_ACTIVE` configurável
+
+### Pagflex (PIX)
+- PIX com webhook de confirmação; `PAGFLEX_ACTIVE` configurável
+
+### Axis (PIX)
+- PIX com webhook de confirmação; `AXIS_ACTIVE` configurável
+
+---
+
+## Observabilidade
+
+### Sentry
+Integrado em **frontend e backend** para rastreamento proativo de exceções em produção:
+
+- Captura automática de erros não tratados e rejeições de Promise
+- **Alertas automáticos** para eventos críticos de infraestrutura:
+  - `autoReleaseCard` com >50% de falhas por execução
+  - Nenhuma rota de adquirente ativa disponível
+  - Circuit breaker não encontrado para um PSP
+  - Divergência detectada entre saldo no banco e saldo no PSP (job de reconciliação)
+- Configurável via `SENTRY_DSN` (backend) e `VITE_SENTRY_DSN` (frontend)
+- Zero impacto quando DSN não configurado (falha silenciosa)
+
+---
+
+## Autenticação Social
+
+### Google OAuth
+- Login via conta Google sem necessidade de senha Upay
+- Fluxo OAuth 2.0 padrão com callback para `/api/auth/google`
+- **Gestão de sessões**: visualização e revogação de sessões ativas por dispositivo
+  - `DELETE /api/auth/sessions/:id` — revogar sessão específica
+  - `DELETE /api/auth/sessions/others` — revogar todas exceto a atual
 
 ---
 

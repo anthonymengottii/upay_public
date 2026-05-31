@@ -8,8 +8,8 @@ A plataforma **Upay** segue uma **arquitetura de serviços em camadas** que sepa
 
 ## Componentes Principais
 
-### 1. Frontend (React 18 + Vite)
-- Construído com **React 18 + Vite** e **TypeScript** strict mode
+### 1. Frontend (React 19 + Vite)
+- Construído com **React 19 + Vite** e **TypeScript** strict mode
 - Gerenciamento de estado via **Zustand** (estado global de autenticação) e **React Query** (estado do servidor, cache e invalidação)
 - Camada de UI: **Tailwind CSS** + componentes **shadcn/ui** com suporte completo a dark mode
 - Roteamento multi-página: dashboard, painel admin, catálogo de produtos, marketplace de afiliados, checkout
@@ -35,7 +35,9 @@ Cada domínio possui um módulo de serviço isolado:
 | `balanceService` | Créditos, débitos e consultas de saldo da carteira |
 | `webhookService` | Entrega de webhooks de saída com lógica de retry |
 | `notificationService` | Envio de emails via templates Handlebars + comprovantes PDF |
-| `ameiiService` | Integração com gateway PIX com sincronização assíncrona de status |
+| `subscriptionService` | Cobrança recorrente, gestão de planos, retry automático, métricas MRR/churn |
+| `auditService` | Registro imutável de ações — conformidade BACEN 4.658/2018 e LGPD |
+| `fyntraService` / `pagarmeService` / etc. | Adaptadores por PSP com circuit breaker integrado |
 
 ### 4. Sistema de Marketing de Afiliados (v2.22.0)
 - Merchants criam registros **AffiliateProgram** vinculados 1:1 a um produto
@@ -53,29 +55,34 @@ Cada domínio possui um módulo de serviço isolado:
 - **Quadro Kanban**: model `KanbanTask` com enum de prioridade, responsáveis e status por coluna
 - **Gestão de templates de email**: templates editáveis pelo admin com comprovantes PDF
 
-### 6. Segurança
-- Senhas com hash via **bcrypt**
-- Assinaturas de webhook: **HMAC-SHA256** com comparação timing-safe
-- Rate limiting por `userId` nas rotas autenticadas
-- **Circuit breaker** nas chamadas ao PSP
-- Sanitização XSS nos metadados de transações
+### 6. Segurança e Conformidade
+- Senhas com hash via **bcrypt**; **MFA TOTP** (Google Authenticator) com QR code
+- Assinaturas de webhook: **HMAC-SHA256** com comparação timing-safe; mínimo 32 bytes no secret
+- Rate limiting por `userId` nas rotas autenticadas; duplo limite por email + IP no reset de senha
+- **Circuit breaker** por PSP; alerta Sentry quando nenhuma rota ativa
+- Sanitização XSS nos metadados de transações e URLs de branding (white-label)
 - Validação de CPF/CNPJ com algoritmo **mod-11**
-- CORS com lista explícita de origens permitidas
+- CORS com lista explícita de origens permitidas; roteamento por subdomínio (`app.*` / `checkout.*`)
+- `expectedCode`/`receivedCode` removidos dos logs TOTP — sem PII em logs de autenticação
+- **AuditLog imutável**: sem UPDATE/DELETE, retenção 1825 dias (**BACEN 4.658/2018**)
+- **LGPD — art. 18**: `deleteMyData` anonimiza `AuditLog`, `Session` e `Transaction` completamente
 
 ---
 
 ## Modelo de Dados
 
 ```
-User ──────────────── Transaction
+User ──────────────── Transaction ──── AffiliateCommission
   │                       │
-  ├── AffiliateProgram     └── AffiliateCommission
+  ├── AffiliateProgram     └── CartAbandonment
   │       │
   │   AffiliateLink ──── AffiliateCommission
   │
   ├── BalanceEntry
   ├── Withdrawal
+  ├── SubscriptionPlan ──── Subscription
   ├── PaymentLink ──── PaymentLinkProduct ──── Product
+  ├── AuditLog (imutável)
   └── KYC
 ```
 
@@ -83,6 +90,9 @@ User ──────────────── Transaction
 - `AffiliateLink` → único por `(programId, affiliateId)`
 - `AffiliateCommission` → único por `transactionId`
 - `Transaction.affiliateLinkId` → FK nullable
+- `Subscription` → vinculada a `SubscriptionPlan` e ao `User` (merchant)
+- `CartAbandonment` → vinculada a `PaymentLink`, marcada como recuperada na conclusão do pagamento
+- `AuditLog` → sem FK de update/delete; retenção mínima 1825 dias
 
 ---
 
@@ -92,10 +102,12 @@ User ──────────────── Transaction
 |--------|------------|
 | Frontend | Vercel (build Vite, deploys de preview) |
 | Backend API | Render (Node.js 20, auto-deploy no push) |
-| Banco de Dados | PostgreSQL gerenciado (migrações Prisma) |
-| Cache | Redis gerenciado |
+| Banco de Dados | PostgreSQL 16+ gerenciado (migrações Prisma 7) |
+| Cache | Redis 7 gerenciado |
 | Imagens | Cloudinary (WebP, CDN) |
+| Observabilidade | Sentry (frontend + backend) |
 | CI/CD | GitHub Actions (`unit.yml` + `e2e.yml`) |
+| Self-hosted | Docker Compose (postgres:16 + redis:7 + api + nginx frontend) |
 
 ---
 

@@ -7,12 +7,12 @@
 <p><em>Gateway de pagamentos completo com marketplace de afiliados, gestão financeira e painel administrativo avançado.</em></p>
 
 <p>
-  <img src="https://img.shields.io/badge/Versão-2.22.0-6D28D9?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Versão-2.24.0-6D28D9?style=for-the-badge" />
   <img src="https://img.shields.io/badge/TypeScript-100%25-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
   <img src="https://img.shields.io/badge/Node.js-20+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
-  <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
-  <img src="https://img.shields.io/badge/PostgreSQL-13+-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
-  <img src="https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma&logoColor=white" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
+  <img src="https://img.shields.io/badge/PostgreSQL-16+-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Prisma-7_ORM-2D3748?style=for-the-badge&logo=prisma&logoColor=white" />
 </p>
 
 <p>
@@ -45,23 +45,37 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 - **TypeScript strict mode** em todo o frontend e backend
 - **Fluxo de KYC** com upload de documentos, revisão administrativa e webhooks de status
 - **Autenticação JWT** com bcrypt, além de suporte a API Key para integrações externas
-- **Controle de acesso baseado em papéis (RBAC)** com 18 flags de permissão granular
-- **Rate limiting** por `userId` nas rotas autenticadas
-- **Idempotency keys** na criação de transações
-- **Assinaturas de webhook HMAC-SHA256** com comparação timing-safe
+- **MFA com Google Authenticator (TOTP)** — ativação, validação e desativação com QR code
+- **Login social Google (OAuth)** — autenticação via conta Google; gestão de sessões com revogação por dispositivo
+- **Controle de acesso baseado em papéis (RBAC)** com 30+ flags de permissão granular
+- **Rate limiting** por `userId` nas rotas autenticadas; duplo limite por email e IP no reset de senha
+- **Idempotency keys** na criação de transações e cobranças de assinatura
+- **Assinaturas de webhook HMAC-SHA256** com comparação timing-safe; comprimento mínimo 32 bytes enforçado
 - **Validação de CPF/CNPJ** com algoritmo mod-11
-- **Sanitização XSS** nos metadados de transações
+- **Sanitização XSS** nos metadados de transações e URLs de branding (white-label)
+- **AuditLog imutável**: registros sem UPDATE/DELETE, retenção de 1825 dias (5 anos, conforme **BACEN 4.658/2018**)
+- **LGPD — direito ao erasure**: `deleteMyData` anonimiza `AuditLog`, `Session` e `Transaction` completamente
+- **Sentry** integrado em frontend e backend — rastreamento de exceções, alertas de jobs e circuit breakers em produção
+- **Job de reconciliação**: verifica divergência de saldo DB vs PSP com alerta automático via Sentry
 
 ### 💳 Processamento de Pagamentos
 - **Multi-método**: PIX (instantâneo), cartão de crédito/débito (até 12x), boleto
-- **Integração PSP**: gateway Ameii com processamento PIX assíncrono e sincronização de status
-- **Circuit breaker** nas chamadas ao PSP para isolamento de falhas
-- **Entrega de webhooks** com retry automático
-- **Liberação automática de cartão** — 30 dias à vista ou por parcela
-- **Split de pagamentos** via Pagar.me
+- **Multi-PSP com prioridade configurável**: 7 adquirentes (Fyntra, Pagar.me, Citrex, Ameii, Ezzy Banking, Pagflex, Axis) — failover automático e roteamento por prioridade
+- **Circuit breaker** em cada PSP para isolamento de falhas; alerta Sentry quando nenhuma rota ativa
+- **Entrega de webhooks** com retry automático e assinatura HMAC-SHA256
+- **Liberação automática de cartão** — 30 dias à vista ou por parcela (job background configurável)
+- **Split de pagamentos** via Pagar.me — divisão automática entre gateway e merchant por taxa cadastrada
 - **Rastreamento avançado de vendas** — captura de UTMs (`utm_source`, `utm_medium`, `utm_campaign`) e click IDs (`fbclid`, `gclid`) via Utmify
 
-### 🤝 Sistema de Marketing de Afiliados (v2.22.0)
+### 📋 Assinaturas Recorrentes e Cart Abandonment
+- **Planos configuráveis**: nome, preço, intervalo (mensal, anual, etc.), período de trial e limite de assinantes
+- **Checkout público sem autenticação**: clientes se inscrevem via `POST /api/subscriptions/checkout`
+- **Métricas MRR/churn**: dashboard com MRR, churn rate e assinantes ativos por merchant
+- **Retry automático**: cobranças falhas reprocessadas automaticamente
+- **Cart abandonment**: captura de clientes que iniciaram mas não finalizaram o checkout — marcação de recuperação quando retornam
+- **Painel admin**: listagem filtrada por link e período com análise de conversão
+
+### 🤝 Sistema de Marketing de Afiliados
 - **Marketplace**: merchants criam programas de afiliados por produto; afiliados navegam e solicitam afiliação
 - **Links rastreáveis únicos** — `/pay/{slug}?aff={CODIGO}` com janela de cookie configurável
 - **Comissões automáticas**: creditadas na carteira do afiliado após confirmação do pagamento — tipos `PERCENTAGE` ou `FIXED`
@@ -86,9 +100,10 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 - **Dashboard de auditoria** — fila de KYC, aprovações de saque, solicitações de antecipação, gestão de transações
 
 ### 🧪 Testes e CI/CD
-- **Suítes de testes unitários** (Vitest) cobrindo transações, carteira, links de pagamento, perfil, antecipações, transferências e cupons
-- **Pipeline E2E** com PostgreSQL real
-- **GitHub Actions** com workflows separados `unit.yml` e `e2e.yml`
+- **214+ suítes de testes** — 111 Jest (backend) + 103 Vitest (frontend) — cobrindo controllers, serviços, middlewares, hooks, screens e stores
+- **~2.100+ test cases** unitários passando; 19 fluxos E2E com **PostgreSQL real** (sem mocks de banco)
+- **GitHub Actions** com workflows separados `unit.yml` (Jest + Vitest + ESLint) e `e2e.yml`
+- **ESLint 0 warnings** — backend e frontend com `--max-warnings 0`; step de lint no CI
 
 ---
 
@@ -100,14 +115,15 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 
 | Camada | Tecnologias |
 |--------|-------------|
-| **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand, React Query |
+| **Frontend** | React 19, TypeScript, Vite 7, Tailwind CSS, shadcn/ui, Zustand, React Query |
 | **Backend** | Node.js 20, Express, TypeScript, Zod |
-| **Banco de Dados** | PostgreSQL 13+, Prisma ORM, Redis |
-| **Autenticação** | JWT, bcrypt, API Keys |
-| **Armazenamento** | Cloudinary |
-| **Pagamentos** | Ameii (PIX), Pagar.me (split), Utmify (rastreamento) |
-| **DevOps** | GitHub Actions, Render (API), Vercel (Frontend) |
-| **Docs** | Mintlify, OpenAPI 3.0 |
+| **Banco de Dados** | PostgreSQL 16+, Prisma 7 ORM, Redis 7 |
+| **Autenticação** | JWT, bcrypt, API Keys, Google OAuth, TOTP (MFA) |
+| **Armazenamento** | Cloudinary (WebP, CDN) |
+| **Pagamentos** | Fyntra, Pagar.me, Citrex, Ameii, Ezzy, Pagflex, Axis + Utmify (rastreamento) |
+| **Observabilidade** | Sentry (frontend + backend), circuit breaker, job de reconciliação |
+| **DevOps** | Docker, GitHub Actions, Render (API), Vercel (Frontend) |
+| **Docs** | Mintlify, OpenAPI 3.0, Swagger UI |
 
 ---
 
@@ -127,8 +143,8 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 │  transactionService · affiliateService · referralService        │
 │  balanceService · notificationService · webhookService          │
 ├──────────────────┬──────────────────────┬───────────────────────┤
-│   PostgreSQL     │       Redis           │   Cloudinary / PSPs   │
-│   (Prisma ORM)   │  (cache · rate limit) │   (Ameii · Pagar.me)  │
+│   PostgreSQL     │       Redis           │   Cloudinary / PSPs            │
+│   (Prisma ORM)   │  (cache · rate limit) │   Fyntra · Pagar.me · +5 PSPs  │
 └──────────────────┴──────────────────────┴───────────────────────┘
 ```
 
@@ -141,24 +157,32 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 | Pagamento via PIX instantâneo | ✅ Produção |
 | Cartão de crédito/débito (12x) | ✅ Produção |
 | Boleto bancário | ✅ Produção |
+| Multi-PSP com prioridade configurável (7 adquirentes) | ✅ Produção |
 | KYC com revisão administrativa | ✅ Produção |
-| Assinaturas de webhook | ✅ Produção |
+| MFA (TOTP Google Authenticator) | ✅ Produção |
+| Login social Google (OAuth) + gestão de sessões | ✅ Produção |
+| Assinaturas de webhook HMAC-SHA256 | ✅ Produção |
 | Sistema de cupons (% / fixo) | ✅ Produção |
-| Catálogo de produtos + estoque | ✅ Produção |
-| Programa de indicações | ✅ Produção |
-| **Marketplace de afiliados** | ✅ **v2.22.0** |
+| Catálogo de produtos + controle de estoque | ✅ Produção |
+| Programa de indicações (recompensa fixa + comissão) | ✅ Produção |
+| Marketplace de afiliados | ✅ Produção |
+| **Assinaturas recorrentes** (MRR/churn, retry, trial) | ✅ Produção |
+| **Cart abandonment** (captura + recuperação) | ✅ Produção |
 | Saldo / saques / antecipações | ✅ Produção |
-| RBAC administrativo (18 permissões) | ✅ Produção |
+| RBAC administrativo (30+ permissões granulares) | ✅ Produção |
 | Quadro Kanban administrativo | ✅ Produção |
 | Idempotency keys | ✅ Produção |
 | Split de pagamentos | ✅ Produção |
-| Rastreamento UTM / vendas | ✅ Produção |
+| Rastreamento UTM / vendas (Utmify) | ✅ Produção |
 | Integração com Shopify | ✅ Produção |
-| Rate limiting | ✅ Produção |
-| Assinaturas HMAC nos webhooks | ✅ Produção |
-| Circuit breaker (PSP) | ✅ Produção |
-| Suítes de testes unitários e E2E | ✅ Produção |
-| OpenAPI 3.0 + documentação pública | ✅ Produção |
+| Rate limiting distribuído (Redis) | ✅ Produção |
+| Circuit breaker por PSP | ✅ Produção |
+| **AuditLog imutável** (BACEN 4.658/2018 — 5 anos) | ✅ Produção |
+| **LGPD — direito ao erasure** (`deleteMyData`) | ✅ Produção |
+| Sentry (observabilidade + alertas automáticos) | ✅ Produção |
+| White-label branding completo (logo, cor, SEO) | ✅ Produção |
+| 214+ suítes / ~2.100+ TCs (unitários + E2E PostgreSQL) | ✅ Produção |
+| OpenAPI 3.0 + Swagger UI | ✅ Produção |
 
 ---
 
