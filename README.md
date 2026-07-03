@@ -44,80 +44,64 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 
 ## Destaques Técnicos
 
-### 🔐 Segurança e Conformidade
-- **TypeScript strict mode** em todo o frontend e backend
-- **Fluxo de KYC** com upload de documentos, revisão administrativa e webhooks de status
-- **Autenticação JWT** com bcrypt, além de suporte a API Key para integrações externas
-- **MFA com Google Authenticator (TOTP)** — ativação, validação e desativação com QR code
-- **Login social Google (OAuth)** — autenticação via conta Google; gestão de sessões com revogação por dispositivo
-- **Controle de acesso baseado em papéis (RBAC)** com 30+ flags de permissão granular
-- **Rate limiting** por `userId` nas rotas autenticadas; duplo limite por email e IP no reset de senha
-- **Idempotency keys** na criação de transações e cobranças de assinatura
-- **Assinaturas de webhook HMAC-SHA256** com comparação timing-safe; comprimento mínimo 32 bytes enforçado
-- **Validação de CPF/CNPJ** com algoritmo mod-11
-- **Sanitização XSS** nos metadados de transações e URLs de branding (white-label)
-- **AuditLog imutável**: registros sem UPDATE/DELETE, retenção de 1825 dias (5 anos, conforme **BACEN 4.658/2018**)
-- **LGPD — direito ao erasure**: `deleteMyData` anonimiza `AuditLog`, `Session` e `Transaction` completamente
-- **Sentry** integrado em frontend e backend — rastreamento de exceções, alertas de jobs e circuit breakers em produção
-- **Job de reconciliação**: verifica divergência de saldo DB vs PSP com alerta automático via Sentry
+### Segurança e Conformidade
+- **TypeScript strict** em todo o frontend e backend
+- **Autenticação completa**: JWT + bcrypt, API Keys, login social Google (OAuth), MFA TOTP e gestão de sessões com revogação por dispositivo
+- **KYC** com upload de documentos e revisão administrativa
+- **RBAC** com 30+ permissões granulares
+- **Rate limiting** por usuário, email e IP — contadores atômicos no Redis
+- **Webhooks assinados** com HMAC-SHA256 e comparação timing-safe
+- **Idempotency keys** em transações e cobranças de assinatura
+- Sanitização XSS e validação de CPF/CNPJ (mod-11)
+- **AuditLog imutável** com retenção de 5 anos (BACEN 4.658/2018) e **LGPD** (direito ao erasure)
+- **Sentry** em frontend e backend + job de reconciliação de saldo DB vs PSP
 
-### 💳 Processamento de Pagamentos
-- **Multi-método**: PIX (instantâneo), cartão de crédito/débito (até 12x), boleto
-- **Multi-PSP com prioridade configurável**: 7 adquirentes (Marlim, Pagar.me, Fyntra, Citrex, Ameii, PixBR.dev, Pague.dev) — failover automático e roteamento por prioridade
-- **Marlim** como adquirente principal — PIX, cartão com 3DS e split de assinatura recorrente (retry e troca de cartão inclusos)
-- **Celcoin** como rail dedicado de payout — processa saques e transferências separado do fluxo de cobrança
-- **Circuit breaker** em cada PSP para isolamento de falhas; alerta Sentry quando nenhuma rota ativa
-- **Entrega de webhooks** com retry automático e assinatura HMAC-SHA256
-- **Liberação automática de cartão** — 30 dias à vista ou por parcela (job background configurável)
-- **Split de pagamentos** — divisão automática entre gateway e merchant por taxa cadastrada
-- **Limite de transação configurável** — teto global da plataforma com override por empresa/usuário (bloqueio explícito quando zerado)
-- **OTP em saques e transferências** — código de 6 dígitos, hash SHA256, TTL 300s no Redis, 5 tentativas, comparação timing-safe
-- **Rastreamento avançado de vendas** — captura de UTMs (`utm_source`, `utm_medium`, `utm_campaign`) e click IDs (`fbclid`, `gclid`) via Utmify
+### Processamento de Pagamentos
+- PIX instantâneo, cartão de crédito/débito (até 12x) e boleto
+- **7 PSPs** com roteamento por prioridade e failover automático — Marlim como adquirente principal, Celcoin como rail dedicado de payout
+- **Circuit breaker** por PSP com alertas automáticos no Sentry
+- **Split de pagamentos** entre gateway e merchant
+- **Limite de transação configurável** — global com override por empresa
+- **OTP em saques e transferências** — 6 dígitos, SHA256, TTL no Redis, timing-safe
+- **Webhooks de saída** com retry automático e assinatura HMAC
+- Rastreamento de vendas com UTMs e click IDs via Utmify
 
-### 📋 Assinaturas Recorrentes e Cart Abandonment
-- **Planos configuráveis**: nome, preço, intervalo (mensal, anual, etc.), período de trial e limite de assinantes
-- **Checkout público sem autenticação**: clientes se inscrevem via `POST /api/subscriptions/checkout`
-- **Métricas MRR/churn**: dashboard com MRR, churn rate e assinantes ativos por merchant
-- **Retry automático**: cobranças falhas reprocessadas automaticamente
-- **Cart abandonment**: captura de clientes que iniciaram mas não finalizaram o checkout — marcação de recuperação quando retornam
-- **Painel admin**: listagem filtrada por link e período com análise de conversão
+### Assinaturas Recorrentes e Cart Abandonment
+- Planos com trial, intervalo configurável e limite de assinantes
+- Checkout público sem autenticação
+- Métricas **MRR/churn** por merchant e retry automático de cobranças falhas
+- **Cart abandonment**: captura de checkouts não finalizados com marcação de recuperação
 
-### 🤝 Sistema de Marketing de Afiliados
-- **Marketplace**: merchants criam programas de afiliados por produto; afiliados navegam e solicitam afiliação
-- **Links rastreáveis únicos** — `/pay/{slug}?aff={CODIGO}` com janela de cookie configurável
-- **Comissões automáticas**: creditadas na carteira do afiliado após confirmação do pagamento — tipos `PERCENTAGE` ou `FIXED`
-- **Métricas por link**: contadores de cliques, conversões e status de comissão
-- **Configuração de programa**: descrição, regras, página de afiliados e página de vendas
-- Processamento de comissão via `prisma.$transaction` atômico
+### Marketing de Afiliados
+- **Marketplace**: merchants criam programas por produto; afiliados solicitam afiliação
+- Links rastreáveis `/pay/{slug}?aff={CODIGO}` com janela de cookie configurável
+- Comissões (percentual ou fixa) creditadas automaticamente via transação atômica
+- Métricas de cliques, conversões e status de comissão por link
 
-### 🏗️ Arquitetura e Engenharia
+### Arquitetura e Engenharia
 - **Monorepo** com módulos independentes `api/` (Node.js) e `src/` (React)
-- **Camada de serviços**: serviços de domínio (`transactionService`, `affiliateService`, `referralService`, `webhookService`) isolados dos controllers
-- **Prisma ORM** com migrações versionadas no PostgreSQL
-- **Redis** para cache e contadores de rate limit
-- **Cloudinary** para armazenamento de imagens com otimização automática para WebP
-- **Compressão gzip/brotli** em todas as respostas
-- **Roteamento por subdomínio**: `app.[dominio].com` (dashboard) vs `checkout.[dominio].com` (checkout público)
-- **Especificação OpenAPI 3.0** mantida no código e publicada via Mintlify
+- **Camada de serviços de domínio** isolada dos controllers
+- **Prisma ORM** com migrações versionadas; **Redis** para cache e rate limit
+- **Cloudinary** (imagens WebP via CDN) e compressão gzip/brotli
+- **Roteamento por subdomínio**: `app.*` (dashboard) e `checkout.*` (checkout público)
+- **OpenAPI 3.0** publicada via Mintlify
 
-### 🛠️ Painel Administrativo
-- **Quadro Kanban** — CRUD completo com níveis de prioridade, responsáveis e colunas de status
-- **RBAC granular** — papéis personalizados com toggles de permissão (`approve_kyc`, `view_transactions`, `approve_withdrawals`, entre outros)
-- **Gestão de templates de email** — templates Handlebars com comprovantes PDF anexados
-- **Dashboard de auditoria** — fila de KYC, aprovações de saque, solicitações de antecipação, gestão de transações
+### Painel Administrativo
+- **Quadro Kanban** com prioridades, responsáveis e colunas de status
+- Papéis personalizados com toggles de permissão
+- Templates de email editáveis (Handlebars) com comprovantes PDF
+- Fila de KYC, aprovações de saque e antecipações
 
-### 📱 App Mobile (Android)
-- **React Native + Expo SDK 54** — companion app do dashboard web, mesmo backend/API
-- **NativeWind (Tailwind)** + React Navigation (Stack + Bottom Tabs) + Zustand + TanStack Query
-- Telas: dashboard (KPIs + gráficos SVG), transações, saldo/saques com **OTP de confirmação**, perfil com upload de KYC
-- **expo-secure-store** para token de auth; login social Google
-- **Status: MVP em desenvolvimento** — build de produção (EAS) e publicação na Play Store ainda pendentes
+### App Mobile (Android)
+- **React Native + Expo SDK 54** — mesmo backend/API do dashboard web
+- NativeWind, React Navigation, Zustand e TanStack Query
+- Dashboard com KPIs, transações, saques com OTP e perfil com upload de KYC
+- **Status: MVP em desenvolvimento** — build EAS e Play Store pendentes
 
-### 🧪 Testes e CI/CD
-- **340+ suítes de testes** — Jest (backend) + Vitest (frontend) — cobrindo controllers, serviços, middlewares, hooks, screens e stores
-- **~7.000+ test cases** unitários passando; 19 fluxos E2E com **PostgreSQL real** (sem mocks de banco)
-- **GitHub Actions** com workflows separados `unit.yml` (Jest + Vitest + ESLint) e `e2e.yml`
-- **ESLint 0 warnings** — backend e frontend com `--max-warnings 0`; step de lint no CI
+### Testes e CI/CD
+- **340+ suítes / ~7.000 test cases** — Jest (backend) + Vitest (frontend)
+- **19 fluxos E2E** com PostgreSQL real (sem mocks de banco)
+- **GitHub Actions** (`unit.yml` + `e2e.yml`) com **ESLint 0 warnings** no CI
 
 ---
 
@@ -169,38 +153,38 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 
 | Funcionalidade | Status |
 |----------------|--------|
-| Pagamento via PIX instantâneo | ✅ Produção |
-| Cartão de crédito/débito (12x) | ✅ Produção |
-| Boleto bancário | ✅ Produção |
-| Multi-PSP com prioridade configurável (7 adquirentes: Marlim, Pagar.me, Fyntra, Citrex, Ameii, PixBR.dev, Pague.dev) | ✅ Produção |
-| Limite de transação configurável (global + override por empresa) | ✅ Produção |
-| OTP em saques e transferências (SHA256, Redis TTL, rate-limited) | ✅ Produção |
-| KYC com revisão administrativa | ✅ Produção |
-| MFA (TOTP Google Authenticator) | ✅ Produção |
-| Login social Google (OAuth) + gestão de sessões | ✅ Produção |
-| Assinaturas de webhook HMAC-SHA256 | ✅ Produção |
-| Sistema de cupons (% / fixo) | ✅ Produção |
-| Catálogo de produtos + controle de estoque | ✅ Produção |
-| Programa de indicações (recompensa fixa + comissão) | ✅ Produção |
-| Marketplace de afiliados | ✅ Produção |
-| **Assinaturas recorrentes** (MRR/churn, retry, trial) | ✅ Produção |
-| **Cart abandonment** (captura + recuperação) | ✅ Produção |
-| Saldo / saques / antecipações | ✅ Produção |
-| RBAC administrativo (30+ permissões granulares) | ✅ Produção |
-| Quadro Kanban administrativo | ✅ Produção |
-| Idempotency keys | ✅ Produção |
-| Split de pagamentos | ✅ Produção |
-| Rastreamento UTM / vendas (Utmify) | ✅ Produção |
-| Integração com Shopify | ✅ Produção |
-| Rate limiting distribuído (Redis) | ✅ Produção |
-| Circuit breaker por PSP | ✅ Produção |
-| **AuditLog imutável** (BACEN 4.658/2018 — 5 anos) | ✅ Produção |
-| **LGPD — direito ao erasure** (`deleteMyData`) | ✅ Produção |
-| Sentry (observabilidade + alertas automáticos) | ✅ Produção |
-| White-label branding completo (logo, cor, SEO) | ✅ Produção |
-| 340+ suítes / ~7.000+ TCs (unitários + E2E PostgreSQL) | ✅ Produção |
-| OpenAPI 3.0 + Swagger UI | ✅ Produção |
-| App mobile Android (React Native + Expo) | 🚧 MVP em desenvolvimento |
+| Pagamento via PIX instantâneo | Produção |
+| Cartão de crédito/débito (12x) | Produção |
+| Boleto bancário | Produção |
+| Multi-PSP com prioridade configurável (7 adquirentes: Marlim, Pagar.me, Fyntra, Citrex, Ameii, PixBR.dev, Pague.dev) | Produção |
+| Limite de transação configurável (global + override por empresa) | Produção |
+| OTP em saques e transferências (SHA256, Redis TTL, rate-limited) | Produção |
+| KYC com revisão administrativa | Produção |
+| MFA (TOTP Google Authenticator) | Produção |
+| Login social Google (OAuth) + gestão de sessões | Produção |
+| Assinaturas de webhook HMAC-SHA256 | Produção |
+| Sistema de cupons (% / fixo) | Produção |
+| Catálogo de produtos + controle de estoque | Produção |
+| Programa de indicações (recompensa fixa + comissão) | Produção |
+| Marketplace de afiliados | Produção |
+| **Assinaturas recorrentes** (MRR/churn, retry, trial) | Produção |
+| **Cart abandonment** (captura + recuperação) | Produção |
+| Saldo / saques / antecipações | Produção |
+| RBAC administrativo (30+ permissões granulares) | Produção |
+| Quadro Kanban administrativo | Produção |
+| Idempotency keys | Produção |
+| Split de pagamentos | Produção |
+| Rastreamento UTM / vendas (Utmify) | Produção |
+| Integração com Shopify | Produção |
+| Rate limiting distribuído (Redis) | Produção |
+| Circuit breaker por PSP | Produção |
+| **AuditLog imutável** (BACEN 4.658/2018 — 5 anos) | Produção |
+| **LGPD — direito ao erasure** (`deleteMyData`) | Produção |
+| Sentry (observabilidade + alertas automáticos) | Produção |
+| White-label branding completo (logo, cor, SEO) | Produção |
+| 340+ suítes / ~7.000+ TCs (unitários + E2E PostgreSQL) | Produção |
+| OpenAPI 3.0 + Swagger UI | Produção |
+| App mobile Android (React Native + Expo) | Em desenvolvimento (MVP) |
 
 ---
 
@@ -217,7 +201,7 @@ Documentação completa da API disponível em **[docs.upaybr.com](https://docs.u
 
 ## Repositório
 
-🔒 **Repositório privado** — código completo disponível para parceiros e revisores técnicos mediante solicitação.
+**Repositório privado** — código completo disponível para parceiros e revisores técnicos mediante solicitação.
 
-📩 [anthonymengottii@gmail.com](mailto:anthonymengottii@gmail.com)  
-💼 [LinkedIn — Anthony Mengotti](https://www.linkedin.com/in/anthony-mengotti-50026424a/)
+[anthonymengottii@gmail.com](mailto:anthonymengottii@gmail.com)  
+[LinkedIn — Anthony Mengotti](https://www.linkedin.com/in/anthony-mengotti-50026424a/)

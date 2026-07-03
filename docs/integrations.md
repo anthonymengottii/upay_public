@@ -1,4 +1,4 @@
-# 🔗 Integrações
+# Integrações
 
 ## Processadores de Pagamento (7 PSPs)
 

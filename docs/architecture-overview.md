@@ -1,4 +1,4 @@
-# 🏗️ Upay – Visão Geral da Arquitetura
+# Upay – Visão Geral da Arquitetura
 
 ## Visão Geral
 
