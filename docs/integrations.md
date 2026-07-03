@@ -4,15 +4,20 @@
 
 O Upay opera com **7 adquirentes** via sistema de roteamento com prioridade configurável. Se o PSP de maior prioridade falhar (circuit breaker aberto), o sistema faz failover automático para o próximo ativo. Cada PSP possui seu próprio adaptador com circuit breaker independente.
 
-### Fyntra (PIX)
-- PIX instantâneo com geração de QR code
-- `FYNTRA_ACTIVE` + prioridade configurável pelo painel admin
+### Marlim (PIX, Cartão, Split) — adquirente principal
+- PIX instantâneo e cartão de crédito/débito com **3DS**
+- **Split de assinatura recorrente**: cobrança, retry automático e troca de cartão integrados
+- Ambientes sandbox/produção isolados por configuração
 
-### Pagar.me (PIX, Cartão, Boleto, Split)
+### Pagar.me (PIX, Cartão, Boleto, Split) — legado
 - PIX instantâneo, cartão de crédito/débito (parcelamento até 12x), boleto bancário
 - **Split de pagamentos**: divisão automática entre gateway e merchant usando recipients — cálculo baseado nas taxas cadastradas na plataforma
 - Captura manual, cancelamento e estorno de transações
-- Sistema de recebedores (recipients) para cada merchant
+- Mantido em modo condicional/legado para continuidade de splits já configurados
+
+### Fyntra (PIX)
+- PIX instantâneo com geração de QR code
+- `FYNTRA_ACTIVE` + prioridade configurável pelo painel admin
 
 ### Citrex (PIX)
 - PIX com certificado público para validação de webhooks (TLS mútuo)
@@ -22,14 +27,19 @@ O Upay opera com **7 adquirentes** via sistema de roteamento com prioridade conf
 - **Rastreamento de status**: endpoint `/sync-status` mantém o estado sincronizado
 - `externalId` e `ameiiTxId` persistidos mesmo quando o PSP retorna erro — sem perda de rastreabilidade
 
-### Ezzy Banking (PIX)
-- PIX com webhook de confirmação; `EZZY_ACTIVE` configurável
+### PixBR.dev (PIX)
+- PIX instantâneo com QR code; adaptador sempre ativo quando configurado via API key
 
-### Pagflex (PIX)
-- PIX com webhook de confirmação; `PAGFLEX_ACTIVE` configurável
+### Pague.dev (PIX)
+- PIX instantâneo com QR code; adaptador sempre ativo quando configurado via API key
 
-### Axis (PIX)
-- PIX com webhook de confirmação; `AXIS_ACTIVE` configurável
+---
+
+## Payout / Saques
+
+### Celcoin
+- Rail dedicado para liquidação de saques e transferências — desacoplado do fluxo de cobrança (PSPs acima)
+- Usado por `withdrawService` e pelo webhook de confirmação de saque
 
 ---
 
@@ -57,6 +67,15 @@ Integrado em **frontend e backend** para rastreamento proativo de exceções em 
 - **Gestão de sessões**: visualização e revogação de sessões ativas por dispositivo
   - `DELETE /api/auth/sessions/:id` — revogar sessão específica
   - `DELETE /api/auth/sessions/others` — revogar todas exceto a atual
+
+---
+
+## OTP em Saques e Transferências
+
+- Código de 6 dígitos gerado sob demanda via `POST /api/withdraws/request-otp`
+- Hash **SHA256** armazenado no Redis com TTL de 300s; máximo 5 tentativas de validação
+- Comparação **timing-safe** contra o código informado
+- Validado tanto na criação de saque quanto na criação de transferência antes de liberar o valor
 
 ---
 
