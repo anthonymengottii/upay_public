@@ -199,6 +199,31 @@ Documentação completa da API disponível em **[docs.upaybr.com](https://docs.u
 
 ---
 
+## Screenshots
+
+> Capturados via Playwright com dados 100% fictícios (sem conexão a banco/produção real).
+
+<table>
+  <tr>
+    <td width="50%"><strong>Dashboard</strong><br><img src="docs/screenshots/dashboard.png" width="100%" /></td>
+    <td width="50%"><strong>Transações</strong><br><img src="docs/screenshots/transactions.png" width="100%" /></td>
+  </tr>
+  <tr>
+    <td width="50%"><strong>Produtos</strong><br><img src="docs/screenshots/products.png" width="100%" /></td>
+    <td width="50%"><strong>Links de Pagamento</strong><br><img src="docs/screenshots/payment-links.png" width="100%" /></td>
+  </tr>
+  <tr>
+    <td width="50%"><strong>Checkout Público</strong><br><img src="docs/screenshots/checkout.png" width="100%" /></td>
+    <td width="50%"><strong>Marketplace de Afiliados</strong><br><img src="docs/screenshots/affiliates.png" width="100%" /></td>
+  </tr>
+  <tr>
+    <td width="50%"><strong>Admin — Analytics</strong><br><img src="docs/screenshots/admin-analytics.png" width="100%" /></td>
+    <td width="50%"><strong>Admin — KYC</strong><br><img src="docs/screenshots/admin-kyc.png" width="100%" /></td>
+  </tr>
+</table>
+
+---
+
 ## Repositório
 
 **Repositório privado** — código completo disponível para parceiros e revisores técnicos mediante solicitação.
