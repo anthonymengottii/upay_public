@@ -60,11 +60,15 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 
 ### 💳 Processamento de Pagamentos
 - **Multi-método**: PIX (instantâneo), cartão de crédito/débito (até 12x), boleto
-- **Multi-PSP com prioridade configurável**: 7 adquirentes (Fyntra, Pagar.me, Citrex, Ameii, Ezzy Banking, Pagflex, Axis) — failover automático e roteamento por prioridade
+- **Multi-PSP com prioridade configurável**: 7 adquirentes (Marlim, Pagar.me, Fyntra, Citrex, Ameii, PixBR.dev, Pague.dev) — failover automático e roteamento por prioridade
+- **Marlim** como adquirente principal — PIX, cartão com 3DS e split de assinatura recorrente (retry e troca de cartão inclusos)
+- **Celcoin** como rail dedicado de payout — processa saques e transferências separado do fluxo de cobrança
 - **Circuit breaker** em cada PSP para isolamento de falhas; alerta Sentry quando nenhuma rota ativa
 - **Entrega de webhooks** com retry automático e assinatura HMAC-SHA256
 - **Liberação automática de cartão** — 30 dias à vista ou por parcela (job background configurável)
-- **Split de pagamentos** via Pagar.me — divisão automática entre gateway e merchant por taxa cadastrada
+- **Split de pagamentos** — divisão automática entre gateway e merchant por taxa cadastrada
+- **Limite de transação configurável** — teto global da plataforma com override por empresa/usuário (bloqueio explícito quando zerado)
+- **OTP em saques e transferências** — código de 6 dígitos, hash SHA256, TTL 300s no Redis, 5 tentativas, comparação timing-safe
 - **Rastreamento avançado de vendas** — captura de UTMs (`utm_source`, `utm_medium`, `utm_campaign`) e click IDs (`fbclid`, `gclid`) via Utmify
 
 ### 📋 Assinaturas Recorrentes e Cart Abandonment
@@ -100,8 +104,8 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 - **Dashboard de auditoria** — fila de KYC, aprovações de saque, solicitações de antecipação, gestão de transações
 
 ### 🧪 Testes e CI/CD
-- **214+ suítes de testes** — 111 Jest (backend) + 103 Vitest (frontend) — cobrindo controllers, serviços, middlewares, hooks, screens e stores
-- **~2.100+ test cases** unitários passando; 19 fluxos E2E com **PostgreSQL real** (sem mocks de banco)
+- **340+ suítes de testes** — Jest (backend) + Vitest (frontend) — cobrindo controllers, serviços, middlewares, hooks, screens e stores
+- **~7.000+ test cases** unitários passando; 19 fluxos E2E com **PostgreSQL real** (sem mocks de banco)
 - **GitHub Actions** com workflows separados `unit.yml` (Jest + Vitest + ESLint) e `e2e.yml`
 - **ESLint 0 warnings** — backend e frontend com `--max-warnings 0`; step de lint no CI
 
@@ -120,7 +124,7 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 | **Banco de Dados** | PostgreSQL 16+, Prisma 7 ORM, Redis 7 |
 | **Autenticação** | JWT, bcrypt, API Keys, Google OAuth, TOTP (MFA) |
 | **Armazenamento** | Cloudinary (WebP, CDN) |
-| **Pagamentos** | Fyntra, Pagar.me, Citrex, Ameii, Ezzy, Pagflex, Axis + Utmify (rastreamento) |
+| **Pagamentos** | Marlim, Pagar.me, Fyntra, Citrex, Ameii, PixBR.dev, Pague.dev + Celcoin (payout) + Utmify (rastreamento) |
 | **Observabilidade** | Sentry (frontend + backend), circuit breaker, job de reconciliação |
 | **DevOps** | Docker, GitHub Actions, Render (API), Vercel (Frontend) |
 | **Docs** | Mintlify, OpenAPI 3.0, Swagger UI |
@@ -144,7 +148,7 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 │  balanceService · notificationService · webhookService          │
 ├──────────────────┬──────────────────────┬───────────────────────┤
 │   PostgreSQL     │       Redis           │   Cloudinary / PSPs            │
-│   (Prisma ORM)   │  (cache · rate limit) │   Fyntra · Pagar.me · +5 PSPs  │
+│   (Prisma ORM)   │  (cache · rate limit) │   Marlim · Pagar.me · +5 PSPs  │
 └──────────────────┴──────────────────────┴───────────────────────┘
 ```
 
@@ -157,7 +161,9 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 | Pagamento via PIX instantâneo | ✅ Produção |
 | Cartão de crédito/débito (12x) | ✅ Produção |
 | Boleto bancário | ✅ Produção |
-| Multi-PSP com prioridade configurável (7 adquirentes) | ✅ Produção |
+| Multi-PSP com prioridade configurável (7 adquirentes: Marlim, Pagar.me, Fyntra, Citrex, Ameii, PixBR.dev, Pague.dev) | ✅ Produção |
+| Limite de transação configurável (global + override por empresa) | ✅ Produção |
+| OTP em saques e transferências (SHA256, Redis TTL, rate-limited) | ✅ Produção |
 | KYC com revisão administrativa | ✅ Produção |
 | MFA (TOTP Google Authenticator) | ✅ Produção |
 | Login social Google (OAuth) + gestão de sessões | ✅ Produção |
@@ -181,7 +187,7 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 | **LGPD — direito ao erasure** (`deleteMyData`) | ✅ Produção |
 | Sentry (observabilidade + alertas automáticos) | ✅ Produção |
 | White-label branding completo (logo, cor, SEO) | ✅ Produção |
-| 214+ suítes / ~2.100+ TCs (unitários + E2E PostgreSQL) | ✅ Produção |
+| 340+ suítes / ~7.000+ TCs (unitários + E2E PostgreSQL) | ✅ Produção |
 | OpenAPI 3.0 + Swagger UI | ✅ Produção |
 
 ---
