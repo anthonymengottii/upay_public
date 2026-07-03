@@ -2,7 +2,7 @@
 
 ## Processadores de Pagamento (7 PSPs)
 
-O Upay opera com **7 adquirentes** via sistema de roteamento com prioridade configurável. Se o PSP de maior prioridade falhar (circuit breaker aberto), o sistema faz failover automático para o próximo ativo. Cada PSP possui seu próprio adaptador com circuit breaker independente.
+O Upay (sistema de pagamentos white-label) opera com **7 adquirentes** via sistema de roteamento com prioridade configurável. Se o PSP de maior prioridade falhar (circuit breaker aberto), o sistema faz failover automático para o próximo ativo. Cada PSP possui seu próprio adaptador com circuit breaker independente.
 
 ### Marlim (PIX, Cartão, Split) — adquirente principal
 - PIX instantâneo e cartão de crédito/débito com **3DS**
