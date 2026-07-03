@@ -1,8 +1,9 @@
-<!-- 🏦 Upay | Sistema de Pagamentos White-Label -->
+<!-- Upay | Sistema de Pagamentos White-Label -->
 
 <div align="center">
 
-<h1>🏦 Upay</h1>
+<h1>Upay</h1>
+<p><code>white-label payments platform</code></p>
 <h3>Sistema de Pagamentos White-Label Full-Stack</h3>
 <p><em>Plataforma de pagamentos white-label completa — marketplace de afiliados, gestão financeira e painel administrativo avançado. "Upay" é o nome de referência do projeto; toda a identidade visual (logo, cores, domínio, SEO) é configurável por instância.</em></p>
 
