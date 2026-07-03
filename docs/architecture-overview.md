@@ -16,7 +16,16 @@ A plataforma **Upay** segue uma **arquitetura de serviços em camadas** que sepa
 - **Roteamento por subdomínio**: `app.[dominio].com` para a aplicação principal, `checkout.[dominio].com` para checkout público
 - Fluxo de KYC com formulários multi-etapa e upload de documentos
 
-### 2. Backend (Node.js 20 + Express)
+### 2. Mobile (React Native + Expo) — MVP em desenvolvimento
+- **Expo SDK 54** + **React Native 0.81**, TypeScript strict, mesmo backend/API do web
+- **NativeWind (Tailwind)** para UI + **React Navigation** (Stack + Bottom Tabs)
+- **Zustand** (auth/branding) com persistência via **expo-secure-store**; **TanStack Query** para dados de servidor
+- Telas: dashboard (KPIs + gráficos SVG nativos), transações, saldo/saques com OTP, perfil + upload de KYC
+- Login social Google via `expo-auth-session`
+- Sem impersonação admin (app é exclusivo para o usuário final)
+- Build de produção (EAS) e submissão à Play Store ainda pendentes
+
+### 3. Backend (Node.js 20 + Express)
 - **Express.js** com **TypeScript** — todas as rotas, middlewares e controllers totalmente tipados
 - **Zod** para validação de requisições em tempo de execução (body, params, query) nos controllers
 - **Prisma ORM** com **PostgreSQL** — migrações versionadas
@@ -24,7 +33,7 @@ A plataforma **Upay** segue uma **arquitetura de serviços em camadas** que sepa
 - **JWT** para autenticação de usuários + **API Keys** para integrações externas
 - **Idempotency keys** em `POST /transactions`
 
-### 3. Camada de Serviços
+### 4. Camada de Serviços
 Cada domínio possui um módulo de serviço isolado:
 
 | Serviço | Responsabilidade |
@@ -40,7 +49,7 @@ Cada domínio possui um módulo de serviço isolado:
 | `transactionLimitService` | Resolve limite máximo de transação: override por empresa ou fallback pro teto global da plataforma |
 | `marlimService` / `pagarmeService` / etc. | Adaptadores por PSP com circuit breaker integrado — Marlim como adquirente principal (PIX, cartão, split de assinatura) |
 
-### 4. Sistema de Marketing de Afiliados (v2.22.0)
+### 5. Sistema de Marketing de Afiliados (v2.22.0)
 - Merchants criam registros **AffiliateProgram** vinculados 1:1 a um produto
 - Afiliados ingressam em programas e recebem um **AffiliateLink** único com código legível (`NOME-XXXXXX`)
 - Compras via `?aff=CODIGO` são vinculadas ao afiliado no checkout
@@ -50,13 +59,13 @@ Cada domínio possui um módulo de serviço isolado:
   3. Cria `BalanceEntry` de crédito na carteira do afiliado
   4. Incrementa contadores de conversão atomicamente
 
-### 5. Painel Administrativo
+### 6. Painel Administrativo
 - **Controle de Acesso Baseado em Papéis (RBAC)**: model `AdminRole` com 18 flags booleanas de permissão granular
 - Middleware `requirePermission(flag)` injetado por rota
 - **Quadro Kanban**: model `KanbanTask` com enum de prioridade, responsáveis e status por coluna
 - **Gestão de templates de email**: templates editáveis pelo admin com comprovantes PDF
 
-### 6. Segurança e Conformidade
+### 7. Segurança e Conformidade
 - Senhas com hash via **bcrypt**; **MFA TOTP** (Google Authenticator) com QR code
 - Assinaturas de webhook: **HMAC-SHA256** com comparação timing-safe; mínimo 32 bytes no secret
 - Rate limiting por `userId` nas rotas autenticadas; duplo limite por email + IP no reset de senha — contadores atômicos via Redis INCR (sem race condition sob concorrência)
@@ -103,6 +112,7 @@ User ──────────────── Transaction ──── A
 | Camada | Plataforma |
 |--------|------------|
 | Frontend | Vercel (build Vite, deploys de preview) |
+| Mobile | EAS Build (Android/.aab) → Play Store — pendente publicação |
 | Backend API | Render (Node.js 20, auto-deploy no push) |
 | Banco de Dados | PostgreSQL 16+ gerenciado (migrações Prisma 7) |
 | Cache | Redis 7 gerenciado |
