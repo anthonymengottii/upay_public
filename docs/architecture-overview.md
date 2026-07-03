@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O **Upay** é um **sistema de pagamentos white-label** — o nome é apenas a marca de referência da instância demonstrativa; branding (logo, cores, domínio, SEO) é totalmente configurável por instância. A plataforma segue uma **arquitetura de serviços em camadas** que separa responsabilidades entre transporte (controllers/routes), lógica de negócio (services) e acesso a dados (Prisma ORM). Cada domínio possui seu próprio módulo de serviço, garantindo manutenibilidade em escala.
+O **Upay** é um **sistema de pagamentos white-label**. O nome é apenas a marca de referência da instância demonstrativa; branding (logo, cores, domínio, SEO) é totalmente configurável por instância. A plataforma segue uma **arquitetura de serviços em camadas** que separa responsabilidades entre transporte (controllers/routes), lógica de negócio (services) e acesso a dados (Prisma ORM). Cada domínio possui seu próprio módulo de serviço, garantindo manutenibilidade em escala.
 
 ---
 
@@ -16,7 +16,7 @@ O **Upay** é um **sistema de pagamentos white-label** — o nome é apenas a ma
 - **Roteamento por subdomínio**: `app.[dominio].com` para a aplicação principal, `checkout.[dominio].com` para checkout público
 - Fluxo de KYC com formulários multi-etapa e upload de documentos
 
-### 2. Mobile (React Native + Expo) — MVP em desenvolvimento
+### 2. Mobile (React Native + Expo): MVP em desenvolvimento
 - **Expo SDK 54** + **React Native 0.81**, TypeScript strict, mesmo backend/API do web
 - **NativeWind (Tailwind)** para UI + **React Navigation** (Stack + Bottom Tabs)
 - **Zustand** (auth/branding) com persistência via **expo-secure-store**; **TanStack Query** para dados de servidor
@@ -26,9 +26,9 @@ O **Upay** é um **sistema de pagamentos white-label** — o nome é apenas a ma
 - Build de produção (EAS) e submissão à Play Store ainda pendentes
 
 ### 3. Backend (Node.js 20 + Express)
-- **Express.js** com **TypeScript** — todas as rotas, middlewares e controllers totalmente tipados
+- **Express.js** com **TypeScript**: todas as rotas, middlewares e controllers totalmente tipados
 - **Zod** para validação de requisições em tempo de execução (body, params, query) nos controllers
-- **Prisma ORM** com **PostgreSQL** — migrações versionadas
+- **Prisma ORM** com **PostgreSQL**: migrações versionadas
 - **Redis** para contadores de rate limit e cache
 - **JWT** para autenticação de usuários + **API Keys** para integrações externas
 - **Idempotency keys** em `POST /transactions`
@@ -45,9 +45,9 @@ Cada domínio possui um módulo de serviço isolado:
 | `webhookService` | Entrega de webhooks de saída com lógica de retry |
 | `notificationService` | Envio de emails via templates Handlebars + comprovantes PDF |
 | `subscriptionService` | Cobrança recorrente, gestão de planos, retry automático, métricas MRR/churn |
-| `auditService` | Registro imutável de ações — conformidade BACEN 4.658/2018 e LGPD |
+| `auditService` | Registro imutável de ações, conformidade BACEN 4.658/2018 e LGPD |
 | `transactionLimitService` | Resolve limite máximo de transação: override por empresa ou fallback pro teto global da plataforma |
-| `marlimService` / `pagarmeService` / etc. | Adaptadores por PSP com circuit breaker integrado — Marlim como adquirente principal (PIX, cartão, split de assinatura) |
+| `marlimService` / `pagarmeService` / etc. | Adaptadores por PSP com circuit breaker integrado; Marlim como adquirente principal (PIX, cartão, split de assinatura) |
 
 ### 5. Sistema de Marketing de Afiliados (v2.22.0)
 - Merchants criam registros **AffiliateProgram** vinculados 1:1 a um produto
@@ -68,15 +68,15 @@ Cada domínio possui um módulo de serviço isolado:
 ### 7. Segurança e Conformidade
 - Senhas com hash via **bcrypt**; **MFA TOTP** (Google Authenticator) com QR code
 - Assinaturas de webhook: **HMAC-SHA256** com comparação timing-safe; mínimo 32 bytes no secret
-- Rate limiting por `userId` nas rotas autenticadas; duplo limite por email + IP no reset de senha — contadores atômicos via Redis INCR (sem race condition sob concorrência)
+- Rate limiting por `userId` nas rotas autenticadas; duplo limite por email + IP no reset de senha; contadores atômicos via Redis INCR (sem race condition sob concorrência)
 - **OTP em saques e transferências**: código de 6 dígitos hash SHA256, TTL 300s no Redis, máximo 5 tentativas, comparação timing-safe
 - **Circuit breaker** por PSP; alerta Sentry quando nenhuma rota ativa
 - Sanitização XSS nos metadados de transações e URLs de branding (white-label)
 - Validação de CPF/CNPJ com algoritmo **mod-11**
 - CORS com lista explícita de origens permitidas; roteamento por subdomínio (`app.*` / `checkout.*`)
-- `expectedCode`/`receivedCode` removidos dos logs TOTP — sem PII em logs de autenticação
+- `expectedCode`/`receivedCode` removidos dos logs TOTP, sem PII em logs de autenticação
 - **AuditLog imutável**: sem UPDATE/DELETE, retenção 1825 dias (**BACEN 4.658/2018**)
-- **LGPD — art. 18**: `deleteMyData` anonimiza `AuditLog`, `Session` e `Transaction` completamente
+- **LGPD, art. 18**: `deleteMyData` anonimiza `AuditLog`, `Session` e `Transaction` completamente
 
 ---
 
@@ -112,7 +112,7 @@ User ──────────────── Transaction ──── A
 | Camada | Plataforma |
 |--------|------------|
 | Frontend | Vercel (build Vite, deploys de preview) |
-| Mobile | EAS Build (Android/.aab) → Play Store — pendente publicação |
+| Mobile | EAS Build (Android/.aab) → Play Store, pendente publicação |
 | Backend API | Render (Node.js 20, auto-deploy no push) |
 | Banco de Dados | PostgreSQL 16+ gerenciado (migrações Prisma 7) |
 | Cache | Redis 7 gerenciado |

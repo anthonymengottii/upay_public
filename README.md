@@ -5,7 +5,7 @@
 <h1>Upay</h1>
 <p><code>white-label payments platform</code></p>
 <h3>Sistema de Pagamentos White-Label Full-Stack</h3>
-<p><em>Plataforma de pagamentos white-label completa — marketplace de afiliados, gestão financeira e painel administrativo avançado. "Upay" é o nome de referência do projeto; toda a identidade visual (logo, cores, domínio, SEO) é configurável por instância.</em></p>
+<p><em>Plataforma de pagamentos white-label completa, com marketplace de afiliados, gestão financeira e painel administrativo avançado. "Upay" é o nome de referência do projeto; toda a identidade visual (logo, cores, domínio, SEO) é configurável por instância.</em></p>
 
 <p>
   <img src="https://img.shields.io/badge/Versão-2.24.0-6D28D9?style=for-the-badge" />
@@ -34,9 +34,9 @@
 
 ## Visão Geral
 
-**Upay** é um **sistema de pagamentos white-label** full-stack construído do zero — apesar do nome próprio, a plataforma foi projetada desde o início para ser rebrandada e operada sob qualquer marca. Gerencia o ciclo completo de pagamentos — do PIX e cartão ao marketplace de afiliados, gestão de saldo e conformidade regulatória — com arquitetura orientada a segurança e TypeScript strict em todo o projeto.
+**Upay** é um **sistema de pagamentos white-label** full-stack construído do zero. Apesar do nome próprio, a plataforma foi projetada desde o início para ser rebrandada e operada sob qualquer marca. Gerencia o ciclo completo de pagamentos, do PIX e cartão ao marketplace de afiliados, gestão de saldo e conformidade regulatória, com arquitetura orientada a segurança e TypeScript strict em todo o projeto.
 
-**White-label na prática**: cada instância configura logo, paleta de cores, domínio próprio (roteamento por subdomínio `app.*` / `checkout.*`), metadados de SEO e templates de email — sem alteração de código. "Upay" é apenas o nome de referência da instância demonstrativa.
+**White-label na prática**: cada instância configura logo, paleta de cores, domínio próprio (roteamento por subdomínio `app.*` / `checkout.*`), metadados de SEO e templates de email, sem alteração de código. "Upay" é apenas o nome de referência da instância demonstrativa.
 
 Desenvolvido para competir em profundidade e confiabilidade com as principais plataformas de pagamento brasileiras (Iugu, Pagar.me, Hotmart).
 
@@ -49,7 +49,7 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 - **Autenticação completa**: JWT + bcrypt, API Keys, login social Google (OAuth), MFA TOTP e gestão de sessões com revogação por dispositivo
 - **KYC** com upload de documentos e revisão administrativa
 - **RBAC** com 30+ permissões granulares
-- **Rate limiting** por usuário, email e IP — contadores atômicos no Redis
+- **Rate limiting** por usuário, email e IP, contadores atômicos no Redis
 - **Webhooks assinados** com HMAC-SHA256 e comparação timing-safe
 - **Idempotency keys** em transações e cobranças de assinatura
 - Sanitização XSS e validação de CPF/CNPJ (mod-11)
@@ -58,11 +58,11 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 
 ### Processamento de Pagamentos
 - PIX instantâneo, cartão de crédito/débito (até 12x) e boleto
-- **7 PSPs** com roteamento por prioridade e failover automático — Marlim como adquirente principal, Celcoin como rail dedicado de payout
+- **7 PSPs** com roteamento por prioridade e failover automático; Marlim como adquirente principal, Celcoin como rail dedicado de payout
 - **Circuit breaker** por PSP com alertas automáticos no Sentry
 - **Split de pagamentos** entre gateway e merchant
-- **Limite de transação configurável** — global com override por empresa
-- **OTP em saques e transferências** — 6 dígitos, SHA256, TTL no Redis, timing-safe
+- **Limite de transação configurável**: global com override por empresa
+- **OTP em saques e transferências**: 6 dígitos, SHA256, TTL no Redis, timing-safe
 - **Webhooks de saída** com retry automático e assinatura HMAC
 - Rastreamento de vendas com UTMs e click IDs via Utmify
 
@@ -93,13 +93,13 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 - Fila de KYC, aprovações de saque e antecipações
 
 ### App Mobile (Android)
-- **React Native + Expo SDK 54** — mesmo backend/API do dashboard web
+- **React Native + Expo SDK 54**, mesmo backend/API do dashboard web
 - NativeWind, React Navigation, Zustand e TanStack Query
 - Dashboard com KPIs, transações, saques com OTP e perfil com upload de KYC
-- **Status: MVP em desenvolvimento** — build EAS e Play Store pendentes
+- **Status: MVP em desenvolvimento**, build EAS e Play Store pendentes
 
 ### Testes e CI/CD
-- **340+ suítes / ~7.000 test cases** — Jest (backend) + Vitest (frontend)
+- **340+ suítes / ~7.000 test cases**: Jest (backend) + Vitest (frontend)
 - **19 fluxos E2E** com PostgreSQL real (sem mocks de banco)
 - **GitHub Actions** (`unit.yml` + `e2e.yml`) com **ESLint 0 warnings** no CI
 
@@ -178,13 +178,21 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 | Integração com Shopify | Produção |
 | Rate limiting distribuído (Redis) | Produção |
 | Circuit breaker por PSP | Produção |
-| **AuditLog imutável** (BACEN 4.658/2018 — 5 anos) | Produção |
-| **LGPD — direito ao erasure** (`deleteMyData`) | Produção |
+| **AuditLog imutável** (BACEN 4.658/2018, 5 anos) | Produção |
+| **LGPD, direito ao erasure** (`deleteMyData`) | Produção |
 | Sentry (observabilidade + alertas automáticos) | Produção |
 | White-label branding completo (logo, cor, SEO) | Produção |
 | 340+ suítes / ~7.000+ TCs (unitários + E2E PostgreSQL) | Produção |
 | OpenAPI 3.0 + Swagger UI | Produção |
 | App mobile Android (React Native + Expo) | Em desenvolvimento (MVP) |
+
+---
+
+## Documentação Técnica
+
+- **[Visão Geral da Arquitetura](docs/architecture-overview.md)**: componentes, camada de serviços, modelo de dados, deploy
+- **[Integrações](docs/integrations.md)**: PSPs, payout, observabilidade, autenticação social, SDKs
+- **[Decisões Técnicas de Infraestrutura](docs/decisions.md)**: ADRs com contexto, alternativas consideradas e consequências das principais decisões de infra
 
 ---
 
@@ -217,8 +225,8 @@ Documentação completa da API disponível em **[docs.upaybr.com](https://docs.u
     <td width="50%"><strong>Marketplace de Afiliados</strong><br><img src="docs/screenshots/affiliates.png" width="100%" /></td>
   </tr>
   <tr>
-    <td width="50%"><strong>Admin — Analytics</strong><br><img src="docs/screenshots/admin-analytics.png" width="100%" /></td>
-    <td width="50%"><strong>Admin — KYC</strong><br><img src="docs/screenshots/admin-kyc.png" width="100%" /></td>
+    <td width="50%"><strong>Admin: Analytics</strong><br><img src="docs/screenshots/admin-analytics.png" width="100%" /></td>
+    <td width="50%"><strong>Admin: KYC</strong><br><img src="docs/screenshots/admin-kyc.png" width="100%" /></td>
   </tr>
 </table>
 
@@ -226,7 +234,7 @@ Documentação completa da API disponível em **[docs.upaybr.com](https://docs.u
 
 ## Repositório
 
-**Repositório privado** — código completo disponível para parceiros e revisores técnicos mediante solicitação.
+**Repositório privado**: código completo disponível para parceiros e revisores técnicos mediante solicitação.
 
 [anthonymengottii@gmail.com](mailto:anthonymengottii@gmail.com)  
-[LinkedIn — Anthony Mengotti](https://www.linkedin.com/in/anthony-mengotti-50026424a/)
+[LinkedIn: Anthony Mengotti](https://www.linkedin.com/in/anthony-mengotti-50026424a/)

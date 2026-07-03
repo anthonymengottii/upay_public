@@ -4,14 +4,14 @@
 
 O Upay (sistema de pagamentos white-label) opera com **7 adquirentes** via sistema de roteamento com prioridade configurável. Se o PSP de maior prioridade falhar (circuit breaker aberto), o sistema faz failover automático para o próximo ativo. Cada PSP possui seu próprio adaptador com circuit breaker independente.
 
-### Marlim (PIX, Cartão, Split) — adquirente principal
+### Marlim (PIX, Cartão, Split): adquirente principal
 - PIX instantâneo e cartão de crédito/débito com **3DS**
 - **Split de assinatura recorrente**: cobrança, retry automático e troca de cartão integrados
 - Ambientes sandbox/produção isolados por configuração
 
-### Pagar.me (PIX, Cartão, Boleto, Split) — legado
+### Pagar.me (PIX, Cartão, Boleto, Split): legado
 - PIX instantâneo, cartão de crédito/débito (parcelamento até 12x), boleto bancário
-- **Split de pagamentos**: divisão automática entre gateway e merchant usando recipients — cálculo baseado nas taxas cadastradas na plataforma
+- **Split de pagamentos**: divisão automática entre gateway e merchant usando recipients, cálculo baseado nas taxas cadastradas na plataforma
 - Captura manual, cancelamento e estorno de transações
 - Mantido em modo condicional/legado para continuidade de splits já configurados
 
@@ -25,7 +25,7 @@ O Upay (sistema de pagamentos white-label) opera com **7 adquirentes** via siste
 ### Ameii (PIX)
 - **Processamento assíncrono**: QR codes gerados de forma assíncrona; confirmações via webhook
 - **Rastreamento de status**: endpoint `/sync-status` mantém o estado sincronizado
-- `externalId` e `ameiiTxId` persistidos mesmo quando o PSP retorna erro — sem perda de rastreabilidade
+- `externalId` e `ameiiTxId` persistidos mesmo quando o PSP retorna erro, sem perda de rastreabilidade
 
 ### PixBR.dev (PIX)
 - PIX instantâneo com QR code; adaptador sempre ativo quando configurado via API key
@@ -38,7 +38,7 @@ O Upay (sistema de pagamentos white-label) opera com **7 adquirentes** via siste
 ## Payout / Saques
 
 ### Celcoin
-- Rail dedicado para liquidação de saques e transferências — desacoplado do fluxo de cobrança (PSPs acima)
+- Rail dedicado para liquidação de saques e transferências, desacoplado do fluxo de cobrança (PSPs acima)
 - Usado por `withdrawService` e pelo webhook de confirmação de saque
 
 ---
@@ -65,8 +65,8 @@ Integrado em **frontend e backend** para rastreamento proativo de exceções em 
 - Login via conta Google sem necessidade de senha Upay
 - Fluxo OAuth 2.0 padrão com callback para `/api/auth/google`
 - **Gestão de sessões**: visualização e revogação de sessões ativas por dispositivo
-  - `DELETE /api/auth/sessions/:id` — revogar sessão específica
-  - `DELETE /api/auth/sessions/others` — revogar todas exceto a atual
+  - `DELETE /api/auth/sessions/:id`: revogar sessão específica
+  - `DELETE /api/auth/sessions/others`: revogar todas exceto a atual
 
 ---
 
