@@ -37,7 +37,8 @@ Cada domínio possui um módulo de serviço isolado:
 | `notificationService` | Envio de emails via templates Handlebars + comprovantes PDF |
 | `subscriptionService` | Cobrança recorrente, gestão de planos, retry automático, métricas MRR/churn |
 | `auditService` | Registro imutável de ações — conformidade BACEN 4.658/2018 e LGPD |
-| `fyntraService` / `pagarmeService` / etc. | Adaptadores por PSP com circuit breaker integrado |
+| `transactionLimitService` | Resolve limite máximo de transação: override por empresa ou fallback pro teto global da plataforma |
+| `marlimService` / `pagarmeService` / etc. | Adaptadores por PSP com circuit breaker integrado — Marlim como adquirente principal (PIX, cartão, split de assinatura) |
 
 ### 4. Sistema de Marketing de Afiliados (v2.22.0)
 - Merchants criam registros **AffiliateProgram** vinculados 1:1 a um produto
@@ -58,7 +59,8 @@ Cada domínio possui um módulo de serviço isolado:
 ### 6. Segurança e Conformidade
 - Senhas com hash via **bcrypt**; **MFA TOTP** (Google Authenticator) com QR code
 - Assinaturas de webhook: **HMAC-SHA256** com comparação timing-safe; mínimo 32 bytes no secret
-- Rate limiting por `userId` nas rotas autenticadas; duplo limite por email + IP no reset de senha
+- Rate limiting por `userId` nas rotas autenticadas; duplo limite por email + IP no reset de senha — contadores atômicos via Redis INCR (sem race condition sob concorrência)
+- **OTP em saques e transferências**: código de 6 dígitos hash SHA256, TTL 300s no Redis, máximo 5 tentativas, comparação timing-safe
 - **Circuit breaker** por PSP; alerta Sentry quando nenhuma rota ativa
 - Sanitização XSS nos metadados de transações e URLs de branding (white-label)
 - Validação de CPF/CNPJ com algoritmo **mod-11**
