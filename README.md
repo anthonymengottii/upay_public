@@ -1,10 +1,10 @@
-<!-- 🏦 Upay | Gateway de Pagamentos -->
+<!-- 🏦 Upay | Sistema de Pagamentos White-Label -->
 
 <div align="center">
 
 <h1>🏦 Upay</h1>
-<h3>Gateway de Pagamentos Full-Stack</h3>
-<p><em>Gateway de pagamentos completo com marketplace de afiliados, gestão financeira e painel administrativo avançado.</em></p>
+<h3>Sistema de Pagamentos White-Label Full-Stack</h3>
+<p><em>Plataforma de pagamentos white-label completa — marketplace de afiliados, gestão financeira e painel administrativo avançado. "Upay" é o nome de referência do projeto; toda a identidade visual (logo, cores, domínio, SEO) é configurável por instância.</em></p>
 
 <p>
   <img src="https://img.shields.io/badge/Versão-2.24.0-6D28D9?style=for-the-badge" />
@@ -33,9 +33,11 @@
 
 ## Visão Geral
 
-**Upay** é um gateway de pagamentos full-stack construído do zero. Gerencia o ciclo completo de pagamentos — do PIX e cartão ao marketplace de afiliados, gestão de saldo e conformidade regulatória — com arquitetura orientada a segurança e TypeScript strict em todo o projeto.
+**Upay** é um **sistema de pagamentos white-label** full-stack construído do zero — apesar do nome próprio, a plataforma foi projetada desde o início para ser rebrandada e operada sob qualquer marca. Gerencia o ciclo completo de pagamentos — do PIX e cartão ao marketplace de afiliados, gestão de saldo e conformidade regulatória — com arquitetura orientada a segurança e TypeScript strict em todo o projeto.
 
-Desenvolvido para competir em profundidade e confiabilidade com as principais plataformas de pagamento brasileiras (Iugu, Pagar.me, Hotmart), mantendo flexibilidade para uso como solução white-label.
+**White-label na prática**: cada instância configura logo, paleta de cores, domínio próprio (roteamento por subdomínio `app.*` / `checkout.*`), metadados de SEO e templates de email — sem alteração de código. "Upay" é apenas o nome de referência da instância demonstrativa.
+
+Desenvolvido para competir em profundidade e confiabilidade com as principais plataformas de pagamento brasileiras (Iugu, Pagar.me, Hotmart).
 
 ---
 
