@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-A plataforma **Upay** segue uma **arquitetura de serviços em camadas** que separa responsabilidades entre transporte (controllers/routes), lógica de negócio (services) e acesso a dados (Prisma ORM). Cada domínio possui seu próprio módulo de serviço, garantindo manutenibilidade em escala.
+O **Upay** é um **sistema de pagamentos white-label** — o nome é apenas a marca de referência da instância demonstrativa; branding (logo, cores, domínio, SEO) é totalmente configurável por instância. A plataforma segue uma **arquitetura de serviços em camadas** que separa responsabilidades entre transporte (controllers/routes), lógica de negócio (services) e acesso a dados (Prisma ORM). Cada domínio possui seu próprio módulo de serviço, garantindo manutenibilidade em escala.
 
 ---
 
