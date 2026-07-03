@@ -211,6 +211,12 @@ Documentação completa da API disponível em **[docs.upaybr.com](https://docs.u
 
 > Capturados via Playwright com dados 100% fictícios (sem conexão a banco/produção real).
 
+### Demo navegando (checkout + dashboard)
+
+<p align="center">
+  <img src="docs/screenshots/demo.gif" width="760" alt="Demo navegando pelo checkout público e pelo dashboard" />
+</p>
+
 <table>
   <tr>
     <td width="50%"><strong>Dashboard</strong><br><img src="docs/screenshots/dashboard.png" width="100%" /></td>
