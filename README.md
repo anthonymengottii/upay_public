@@ -103,6 +103,13 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 - **Gestão de templates de email** — templates Handlebars com comprovantes PDF anexados
 - **Dashboard de auditoria** — fila de KYC, aprovações de saque, solicitações de antecipação, gestão de transações
 
+### 📱 App Mobile (Android)
+- **React Native + Expo SDK 54** — companion app do dashboard web, mesmo backend/API
+- **NativeWind (Tailwind)** + React Navigation (Stack + Bottom Tabs) + Zustand + TanStack Query
+- Telas: dashboard (KPIs + gráficos SVG), transações, saldo/saques com **OTP de confirmação**, perfil com upload de KYC
+- **expo-secure-store** para token de auth; login social Google
+- **Status: MVP em desenvolvimento** — build de produção (EAS) e publicação na Play Store ainda pendentes
+
 ### 🧪 Testes e CI/CD
 - **340+ suítes de testes** — Jest (backend) + Vitest (frontend) — cobrindo controllers, serviços, middlewares, hooks, screens e stores
 - **~7.000+ test cases** unitários passando; 19 fluxos E2E com **PostgreSQL real** (sem mocks de banco)
@@ -120,6 +127,7 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 | Camada | Tecnologias |
 |--------|-------------|
 | **Frontend** | React 19, TypeScript, Vite 7, Tailwind CSS, shadcn/ui, Zustand, React Query |
+| **Mobile** | React Native, Expo SDK 54, NativeWind, React Navigation, Zustand, TanStack Query |
 | **Backend** | Node.js 20, Express, TypeScript, Zod |
 | **Banco de Dados** | PostgreSQL 16+, Prisma 7 ORM, Redis 7 |
 | **Autenticação** | JWT, bcrypt, API Keys, Google OAuth, TOTP (MFA) |
@@ -189,6 +197,7 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 | White-label branding completo (logo, cor, SEO) | ✅ Produção |
 | 340+ suítes / ~7.000+ TCs (unitários + E2E PostgreSQL) | ✅ Produção |
 | OpenAPI 3.0 + Swagger UI | ✅ Produção |
+| App mobile Android (React Native + Expo) | 🚧 MVP em desenvolvimento |
 
 ---
 
