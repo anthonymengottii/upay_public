@@ -8,7 +8,7 @@
 <p><em>Plataforma de pagamentos white-label completa, com marketplace de afiliados, gestão financeira e painel administrativo avançado. "Upay" é o nome de referência do projeto; toda a identidade visual (logo, cores, domínio, SEO) é configurável por instância.</em></p>
 
 <p>
-  <img src="https://img.shields.io/badge/Versão-2.24.0-6D28D9?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Versão-2.30.0-6D28D9?style=for-the-badge" />
   <img src="https://img.shields.io/badge/TypeScript-100%25-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
   <img src="https://img.shields.io/badge/Node.js-20+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
@@ -54,6 +54,7 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 - **Idempotency keys** em transações e cobranças de assinatura
 - Sanitização XSS e validação de CPF/CNPJ (mod-11)
 - **AuditLog imutável** com retenção de 5 anos (BACEN 4.658/2018) e **LGPD** (direito ao erasure)
+- **Impersonação de admin com TOTP**: grace period de 30 min, modal e hook compartilhados no frontend
 - **Sentry** em frontend e backend + job de reconciliação de saldo DB vs PSP
 
 ### Processamento de Pagamentos
@@ -77,6 +78,12 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 - Links rastreáveis `/pay/{slug}?aff={CODIGO}` com janela de cookie configurável
 - Comissões (percentual ou fixa) creditadas automaticamente via transação atômica
 - Métricas de cliques, conversões e status de comissão por link
+
+### Recompensas e Comunidade
+- **Upay Rewards**: tiers de recompensa por faturamento, progresso calculado automaticamente sobre transações pagas
+- **Programa de indicações** (Indique e Ganhe): recompensa fixa na primeira transação do indicado + comissão recorrente configurável, com override por empresa
+- **Sugestões da comunidade**: envio e feed público de sugestões aprovadas, com categorias e moderação admin
+- **Roadmap estilo Kanban**: etapas (Ideia, Fase inicial, Em desenvolvimento, Finalizado) com curtidas da comunidade para priorização
 
 ### Arquitetura e Engenharia
 - **Monorepo** com módulos independentes `api/` (Node.js) e `src/` (React)
@@ -161,11 +168,14 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 | OTP em saques e transferências (SHA256, Redis TTL, rate-limited) | Produção |
 | KYC com revisão administrativa | Produção |
 | MFA (TOTP Google Authenticator) | Produção |
+| Impersonação de admin protegida por TOTP | Produção |
 | Login social Google (OAuth) + gestão de sessões | Produção |
 | Assinaturas de webhook HMAC-SHA256 | Produção |
 | Sistema de cupons (% / fixo) | Produção |
 | Catálogo de produtos + controle de estoque | Produção |
 | Programa de indicações (recompensa fixa + comissão) | Produção |
+| Sistema de recompensas por faturamento (Upay Rewards) | Produção |
+| Sugestões da comunidade + Roadmap Kanban com curtidas | Produção |
 | Marketplace de afiliados | Produção |
 | **Assinaturas recorrentes** (MRR/churn, retry, trial) | Produção |
 | **Cart abandonment** (captura + recuperação) | Produção |
