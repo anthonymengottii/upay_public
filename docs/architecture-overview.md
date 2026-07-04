@@ -20,7 +20,9 @@ O **Upay** é um **sistema de pagamentos white-label**. O nome é apenas a marca
 - **Expo SDK 54** + **React Native 0.81**, TypeScript strict, mesmo backend/API do web
 - **NativeWind (Tailwind)** para UI + **React Navigation** (Stack + Bottom Tabs)
 - **Zustand** (auth/branding) com persistência via **expo-secure-store**; **TanStack Query** para dados de servidor
-- Telas: dashboard (KPIs + gráficos SVG nativos), transações, saldo/saques com OTP, perfil + upload de KYC
+- Telas: dashboard (KPIs + gráficos SVG nativos), transações (filtros de status + detalhe em cards), saldo/saques com OTP, perfil + upload de KYC
+- Onboarding guiado com paridade ao web (8 passos, animações)
+- Componentes de UI (Button) com paridade de variants/tamanhos/ícones do shadcn/ui web
 - Login social Google via `expo-auth-session`
 - Sem impersonação admin (app é exclusivo para o usuário final)
 - Build de produção (EAS) e submissão à Play Store ainda pendentes

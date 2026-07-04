@@ -66,6 +66,7 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 - **OTP em saques e transferências**: 6 dígitos, SHA256, TTL no Redis, timing-safe
 - **Webhooks de saída** com retry automático e assinatura HMAC
 - Rastreamento de vendas com UTMs e click IDs via Utmify
+- **Meta Pixel por link de pagamento**: script injetado no checkout público com validação server-side rigorosa (whitelist de tags e domínios, limite de tamanho, bloqueio de `eval`/`innerHTML`/handlers de evento)
 
 ### Assinaturas Recorrentes e Cart Abandonment
 - Planos com trial, intervalo configurável e limite de assinantes
@@ -102,7 +103,9 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 ### App Mobile (Android)
 - **React Native + Expo SDK 54**, mesmo backend/API do dashboard web
 - NativeWind, React Navigation, Zustand e TanStack Query
-- Dashboard com KPIs, transações, saques com OTP e perfil com upload de KYC
+- Dashboard com KPIs, transações com filtros de status (9 opções) e detalhe em cards, saques com OTP e perfil com upload de KYC
+- **Onboarding guiado** com paridade ao web (8 passos e animações)
+- Biblioteca de componentes (Button) com paridade de variants, tamanhos e ícones do shadcn/ui web
 - **Status: MVP em desenvolvimento**, build EAS e Play Store pendentes
 
 ### Testes e CI/CD
