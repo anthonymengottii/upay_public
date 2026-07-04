@@ -211,7 +211,7 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 
 ## Documentação Pública
 
-Documentação completa da API disponível em **[docs.upaybr.com](https://docs.upaybr.com)**, incluindo:
+Documentação completa da API disponível em **[docs.usealpa.com](https://docs.usealpa.com)**, incluindo:
 - Guia de início rápido e autenticação
 - Referência da API REST (especificação OpenAPI 3.0)
 - Guia do sistema de afiliados

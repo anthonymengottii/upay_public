@@ -128,13 +128,13 @@ O Upay entrega eventos em tempo real para os endpoints dos merchants:
 
 ## SDKs para Desenvolvedores
 
-SDKs oficiais disponíveis para as principais linguagens backend:
+SDKs oficiais mantidos em repositórios próprios, um por linguagem:
 
 | SDK | Pacote | Linguagem |
 |-----|--------|-----------|
-| Node.js / TypeScript | `@upay/upay-js` | JavaScript / TypeScript |
-| Python | `upay-python` | Python 3.8+ |
-| PHP | `upay/upay-php` | PHP 7.4+ |
-| Java | `com.upay:upay-java` | Java 11+ |
+| Node.js / TypeScript | `@alpa/alpa-js` | JavaScript / TypeScript |
+| Python | `alpa-python` | Python 3.8+ |
+| PHP | `alpa/alpa-php` | PHP 7.4+ |
+| Java | `com.alpa:alpa-java` | Java 11+ |
 
-Todos os SDKs incluem utilitários de validação de assinatura HMAC para webhooks e tratamento de erros tipado.
+Todos os SDKs incluem utilitários de validação de assinatura HMAC para webhooks e tratamento de erros tipado. Ainda não publicados em registros públicos (npm/PyPI/Packagist/Maven); instalação via GitHub.
