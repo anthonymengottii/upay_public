@@ -28,6 +28,16 @@
   </a>
 </p>
 
+<p align="center">
+  <a href="#visão-geral">Visão Geral</a> ·
+  <a href="#destaques-técnicos">Destaques</a> ·
+  <a href="#stack-tecnológico">Stack</a> ·
+  <a href="#arquitetura-do-sistema">Arquitetura</a> ·
+  <a href="#funcionalidades">Funcionalidades</a> ·
+  <a href="#documentação-técnica">Documentação</a> ·
+  <a href="#screenshots">Screenshots</a>
+</p>
+
 </div>
 
 ---
@@ -140,61 +150,78 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                       Frontend React                            │
+│  Frontend React  (web)  ·  App Mobile  (Expo)                   │
 │  Dashboard · Painel Admin · Checkout · Marketplace de Afiliados │
 └────────────────────────────┬────────────────────────────────────┘
                              │ REST + Webhooks
 ┌────────────────────────────▼────────────────────────────────────┐
-│                       Express API                               │
+│  Express API                                                    │
 │  Auth · Pagamentos · Produtos · Afiliados · KYC · Admin         │
 ├─────────────────────────────────────────────────────────────────┤
 │  Camada de Serviços                                             │
 │  transactionService · affiliateService · referralService        │
 │  balanceService · notificationService · webhookService          │
-├──────────────────┬──────────────────────┬───────────────────────┤
-│   PostgreSQL     │       Redis           │   Cloudinary / PSPs            │
-│   (Prisma ORM)   │  (cache · rate limit) │   Marlim · Pagar.me · +5 PSPs  │
-└──────────────────┴──────────────────────┴───────────────────────┘
+├──────────────────┬────────────────────────┬─────────────────────┤
+│  PostgreSQL      │  Redis                 │  Cloudinary / PSPs  │
+│  (Prisma ORM)    │  (cache · rate limit)  │  Marlim + 6 PSPs    │
+└──────────────────┴────────────────────────┴─────────────────────┘
 ```
 
 ---
 
 ## Funcionalidades
 
+### Pagamentos
+
 | Funcionalidade | Status |
 |----------------|--------|
 | Pagamento via PIX instantâneo | Produção |
-| Cartão de crédito/débito (12x) | Produção |
+| Cartão de crédito/débito (até 12x) | Produção |
 | Boleto bancário | Produção |
 | Multi-PSP com prioridade configurável (7 adquirentes: Marlim, Pagar.me, Fyntra, Citrex, Ameii, PixBR.dev, Pague.dev) | Produção |
+| Circuit breaker por PSP | Produção |
+| Split de pagamentos | Produção |
 | Limite de transação configurável (global + override por empresa) | Produção |
+| Idempotency keys | Produção |
+| Saldo / saques / antecipações | Produção |
 | OTP em saques e transferências (SHA256, Redis TTL, rate-limited) | Produção |
-| KYC com revisão administrativa | Produção |
-| MFA (TOTP Google Authenticator) | Produção |
-| Impersonação de admin protegida por TOTP | Produção |
-| Login social Google (OAuth) + gestão de sessões | Produção |
-| Assinaturas de webhook HMAC-SHA256 | Produção |
-| Sistema de cupons (% / fixo) | Produção |
+
+### Vendas e Crescimento
+
+| Funcionalidade | Status |
+|----------------|--------|
 | Catálogo de produtos + controle de estoque | Produção |
+| Sistema de cupons (% / fixo) | Produção |
+| **Assinaturas recorrentes** (MRR/churn, retry, trial) | Produção |
+| **Cart abandonment** (captura + recuperação) | Produção |
+| Marketplace de afiliados | Produção |
 | Programa de indicações (recompensa fixa + comissão) | Produção |
 | Sistema de recompensas por faturamento (Upay Rewards) | Produção |
 | Sugestões da comunidade + Roadmap Kanban com curtidas | Produção |
-| Marketplace de afiliados | Produção |
-| **Assinaturas recorrentes** (MRR/churn, retry, trial) | Produção |
-| **Cart abandonment** (captura + recuperação) | Produção |
-| Saldo / saques / antecipações | Produção |
-| RBAC administrativo (30+ permissões granulares) | Produção |
-| Quadro Kanban administrativo | Produção |
-| Idempotency keys | Produção |
-| Split de pagamentos | Produção |
 | Rastreamento UTM / vendas (Utmify) | Produção |
 | Integração com Shopify | Produção |
+
+### Segurança e Conformidade
+
+| Funcionalidade | Status |
+|----------------|--------|
+| KYC com revisão administrativa | Produção |
+| MFA (TOTP Google Authenticator) | Produção |
+| Login social Google (OAuth) + gestão de sessões | Produção |
+| Assinaturas de webhook HMAC-SHA256 | Produção |
+| RBAC administrativo (30+ permissões granulares) | Produção |
+| Impersonação de admin protegida por TOTP | Produção |
 | Rate limiting distribuído (Redis) | Produção |
-| Circuit breaker por PSP | Produção |
 | **AuditLog imutável** (BACEN 4.658/2018, 5 anos) | Produção |
 | **LGPD, direito ao erasure** (`deleteMyData`) | Produção |
-| Sentry (observabilidade + alertas automáticos) | Produção |
+
+### Plataforma e Operação
+
+| Funcionalidade | Status |
+|----------------|--------|
 | White-label branding completo (logo, cor, SEO) | Produção |
+| Quadro Kanban administrativo | Produção |
+| Sentry (observabilidade + alertas automáticos) | Produção |
 | 340+ suítes / ~7.000+ TCs (unitários + E2E PostgreSQL) | Produção |
 | OpenAPI 3.0 + Swagger UI | Produção |
 | App mobile Android (React Native + Expo) | Em desenvolvimento (MVP) |
@@ -212,6 +239,7 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 ## Documentação Pública
 
 Documentação completa da API disponível em **[docs.usealpa.com](https://docs.usealpa.com)**, incluindo:
+
 - Guia de início rápido e autenticação
 - Referência da API REST (especificação OpenAPI 3.0)
 - Guia do sistema de afiliados
@@ -255,5 +283,5 @@ Documentação completa da API disponível em **[docs.usealpa.com](https://docs.
 
 **Repositório privado**: código completo disponível para parceiros e revisores técnicos mediante solicitação.
 
-[anthonymengottii@gmail.com](mailto:anthonymengottii@gmail.com)  
-[LinkedIn: Anthony Mengotti](https://www.linkedin.com/in/anthony-mengotti-50026424a/)
+- **Email**: [anthonymengottii@gmail.com](mailto:anthonymengottii@gmail.com)
+- **LinkedIn**: [Anthony Mengotti](https://www.linkedin.com/in/anthony-mengotti-50026424a/)
