@@ -119,8 +119,8 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 - **Status: MVP em desenvolvimento**, build EAS e Play Store pendentes
 
 ### Testes e CI/CD
-- **340+ suítes / ~7.000 test cases**: Jest (backend) + Vitest (frontend)
-- **19 fluxos E2E** com PostgreSQL real (sem mocks de banco)
+- **440+ suítes / ~7.800 test cases**: Jest (backend) + Vitest (frontend)
+- **23 fluxos E2E** com PostgreSQL real (sem mocks de banco)
 - **GitHub Actions** (`unit.yml` + `e2e.yml`) com **ESLint 0 warnings** no CI
 
 ---
@@ -222,7 +222,7 @@ Desenvolvido para competir em profundidade e confiabilidade com as principais pl
 | White-label branding completo (logo, cor, SEO) | Produção |
 | Quadro Kanban administrativo | Produção |
 | Sentry (observabilidade + alertas automáticos) | Produção |
-| 340+ suítes / ~7.000+ TCs (unitários + E2E PostgreSQL) | Produção |
+| 440+ suítes / ~7.800 TCs (unitários + E2E PostgreSQL) | Produção |
 | OpenAPI 3.0 + Swagger UI | Produção |
 | App mobile Android (React Native + Expo) | Em desenvolvimento (MVP) |
 

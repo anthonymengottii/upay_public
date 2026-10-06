@@ -120,7 +120,13 @@ Integração para merchants que vendem via lojas Shopify:
 O Upay entrega eventos em tempo real para os endpoints dos merchants:
 
 - Merchant assina tipos de eventos específicos via `POST /api/v1/webhooks/subscriptions`
-- Eventos: `transaction.created`, `transaction.completed`, `transaction.failed`, `transaction.updated`, `payment_link.created`, `payment_link.updated`, `balance.updated`
+- Eventos disponíveis:
+  - Transações: `transaction.created`, `transaction.updated`, `transaction.completed`, `transaction.failed`, `transaction.refunded`
+  - Links de pagamento: `payment_link.created`, `payment_link.updated`
+  - Saldo e assinaturas: `balance.updated`, `subscription.cancelled`
+  - KYC: `kyc.submitted`, `kyc.approved`, `kyc.rejected`
+  - Antecipações: `advance.created`, `advance.approved`, `advance.rejected`
+  - Saques: `withdrawal.requested`, `withdrawal.completed`, `withdrawal.failed`
 - **Assinatura**: cada entrega inclui `X-Webhook-Signature` (HMAC-SHA256 do payload + secret)
 - **Retry automático**: entregas com falha são reprocessadas automaticamente
 

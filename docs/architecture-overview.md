@@ -34,6 +34,7 @@ O **Upay** é um **sistema de pagamentos white-label**. O nome é apenas a marca
 - **Redis** para contadores de rate limit e cache
 - **JWT** para autenticação de usuários + **API Keys** para integrações externas
 - **Idempotency keys** em `POST /transactions`
+- **Meta Pixel por link de pagamento**, com validação server-side do script injetado no checkout público
 
 ### 4. Camada de Serviços
 Cada domínio possui um módulo de serviço isolado:
@@ -51,7 +52,7 @@ Cada domínio possui um módulo de serviço isolado:
 | `transactionLimitService` | Resolve limite máximo de transação: override por empresa ou fallback pro teto global da plataforma |
 | `marlimService` / `pagarmeService` / etc. | Adaptadores por PSP com circuit breaker integrado; Marlim como adquirente principal (PIX, cartão, split de assinatura) |
 
-### 5. Sistema de Marketing de Afiliados (v2.22.0)
+### 5. Sistema de Marketing de Afiliados
 - Merchants criam registros **AffiliateProgram** vinculados 1:1 a um produto
 - Afiliados ingressam em programas e recebem um **AffiliateLink** único com código legível (`NOME-XXXXXX`)
 - Compras via `?aff=CODIGO` são vinculadas ao afiliado no checkout
@@ -62,8 +63,9 @@ Cada domínio possui um módulo de serviço isolado:
   4. Incrementa contadores de conversão atomicamente
 
 ### 6. Painel Administrativo
-- **Controle de Acesso Baseado em Papéis (RBAC)**: model `AdminRole` com 18 flags booleanas de permissão granular
+- **Controle de Acesso Baseado em Papéis (RBAC)**: model `AdminRole` com lista de permissões granulares (`permissions: String[]`, 41 permissões em `ADMIN_PERMISSIONS`, ex.: `view_kyc`, `approve_withdrawals`); super admin definido por `isSuperAdmin`
 - Middleware `requirePermission(flag)` injetado por rota
+- **Recompensas e comunidade**: `RewardTier`/`RewardProgress`/`RewardClaim` (Upay Rewards), sugestões da comunidade com moderação admin e roadmap Kanban com curtidas (`RoadmapItem`/`RoadmapItemLike`)
 - **Quadro Kanban**: model `KanbanTask` com enum de prioridade, responsáveis e status por coluna
 - **Gestão de templates de email**: templates editáveis pelo admin com comprovantes PDF
 
